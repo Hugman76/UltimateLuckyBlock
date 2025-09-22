@@ -7,8 +7,14 @@ sourceCompatibility = JavaVersion.VERSION_21
 targetCompatibility = JavaVersion.VERSION_21
 
 archivesBaseName = project.archives_base_name
-version = project.mod_version
 group = project.maven_group
+
+def env = System.getenv()
+
+version = project.mod_version
+if(env.COMMIT_HASH != null) {
+    version += "+${env.COMMIT_HASH}"
+}
 
 repositories {
     maven { url = "https://maven.nucleoid.xyz/" }
@@ -58,5 +64,27 @@ java {
 jar {
     from("LICENSE") {
         rename { "${it}_${project.archivesBaseName}" }
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+
+    repositories {
+        if (env.MAVEN_URL) {
+            maven {
+                credentials {
+                    username env.MAVEN_USERNAME
+                    password env.MAVEN_PASSWORD
+                }
+                url env.MAVEN_URL
+            }
+        } else {
+            mavenLocal()
+        }
     }
 }
