@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "name": "Ultimate Lucky Block",
+  "id": "ultimate_lucky_block",
+  "version": "${version}",
+  "icon": "assets/ultimate_lucky_block/logo.png",
+  "description": "Adds feature-complete Lucky Blocks to any world or mini-game.",
+  "authors": [
+    "Hugman"
+  ],
+  "contact": {
+    "sources": "https://github.com/Hugman76/UltimateLuckyBlock",
+    "issues": "https://github.com/Hugman76/UltimateLuckyBlock/issues"
+  },
+  "license": "LGPL-3.0-or-later",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "fr.hugman.ultimate_lucky_block.impl.UltimateLuckyBlock"
+    ]
+  },
+  "depends": {
+    "java": ">=21",
+    "minecraft": ">=1.21.4",
+    "fabricloader": ">=0.16.0",
+    "fabric-api": ">=0.86.1"
+  },
+  "custom": {
+    "mc-publish": {
+      "curseforge": "",
+      "modrinth": "",
+      "loaders": [
+        "fabric",
+        "quilt"
+      ]
+    }
+  }
+}

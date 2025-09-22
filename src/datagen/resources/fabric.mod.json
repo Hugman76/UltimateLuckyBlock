@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "name": "Ultimate Lucky Block Data Generation",
+  "id": "ultimate_lucky_block-datagen",
+  "version": "1.0.0",
+  "authors": [
+    "Hugman"
+  ],
+  "environment": "client",
+  "entrypoints": {
+    "fabric-datagen": [
+      "fr.hugman.ultimate_lucky_block.impl.data.ULBDataGenerator"
+    ]
+  }
+}
