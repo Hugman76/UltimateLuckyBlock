@@ -9,7 +9,7 @@ import net.minecraft.registry.RegistryKeys;
  * @author Hugman
  * @since 1.0.0
  */
-public class LuckyBlockKeys {
+public class ULBBlockKeys {
     public static final RegistryKey<Block> LUCKY_BLOCK = of("lucky_block");
 
     public static final RegistryKey<Block> SUPER_LUCKY_BLOCK = of("super_lucky_block");

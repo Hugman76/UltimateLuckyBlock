@@ -1,19 +1,19 @@
-package fr.hugman.ultimate_lucky_block.impl.itemgroup;
+package fr.hugman.ultimate_lucky_block.api.itemgroup;
 
 import eu.pb4.polymer.core.api.item.PolymerItemGroupUtils;
-import fr.hugman.ultimate_lucky_block.api.block.LuckyBlocks;
+import fr.hugman.ultimate_lucky_block.api.block.ULBBlocks;
 import fr.hugman.ultimate_lucky_block.impl.UltimateLuckyBlock;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 
-import static fr.hugman.ultimate_lucky_block.api.block.LuckyBlocks.*;
+import static fr.hugman.ultimate_lucky_block.api.block.ULBBlocks.*;
 
-public class LuckyBlockItemGroups {
+public class ULBItemGroups {
     public static final ItemGroup LUCKY_BLOCKS = of("lucky_blocks", FabricItemGroup.builder()
             .displayName(Text.translatable("item_group.ultimate_lucky_block.lucky_blocks"))
-            .icon(() -> new ItemStack(LuckyBlocks.LUCKY_BLOCK))
+            .icon(() -> new ItemStack(ULBBlocks.LUCKY_BLOCK))
             .entries((context, entries) -> {
                 entries.add(LUCKY_BLOCK);
                 entries.add(SUPER_LUCKY_BLOCK);

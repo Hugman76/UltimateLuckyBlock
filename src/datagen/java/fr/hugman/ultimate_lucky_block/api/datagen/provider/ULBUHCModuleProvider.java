@@ -1,7 +1,7 @@
 package fr.hugman.ultimate_lucky_block.api.datagen.provider;
 
 import fr.hugman.uhc.api.module.UHCModules;
-import fr.hugman.ultimate_lucky_block.api.block.LuckyBlocks;
+import fr.hugman.ultimate_lucky_block.api.block.ULBBlocks;
 import fr.hugman.ultimate_lucky_block.api.module.ULBUHCModules;
 import fr.hugman.ultimate_lucky_block.api.world.gen.feature.ULBPlacedFeatures;
 import fr.hugman.ultimate_lucky_block.impl.UltimateLuckyBlock;
@@ -17,13 +17,9 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntryList;
-import net.minecraft.text.Text;
-import net.minecraft.util.Util;
 
-import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class ULBUHCModuleProvider extends FabricDynamicRegistryProvider {
     public ULBUHCModuleProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
@@ -47,7 +43,7 @@ public class ULBUHCModuleProvider extends FabricDynamicRegistryProvider {
     public static void register(Registerable<UHCModule> registerable) {
         final var placedFeatures = registerable.getRegistryLookup(RegistryKeys.PLACED_FEATURE);
 
-        register(registerable, ULBUHCModules.LUCKY_BLOCKS, LuckyBlocks.LUCKY_BLOCK,
+        register(registerable, ULBUHCModules.LUCKY_BLOCKS, ULBBlocks.LUCKY_BLOCK,
                 new PlacedFeaturesModifier(RegistryEntryList.of(
                         placedFeatures.getOrThrow(ULBPlacedFeatures.SURFACE_LUCKY_BLOCKS),
                         placedFeatures.getOrThrow(ULBPlacedFeatures.MINERAL_LUCKY_BLOCKS)

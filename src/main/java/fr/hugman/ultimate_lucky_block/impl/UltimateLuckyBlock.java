@@ -3,10 +3,10 @@ package fr.hugman.ultimate_lucky_block.impl;
 import com.google.common.reflect.Reflection;
 import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import fr.hugman.ultimate_lucky_block.api.block.LuckyBlockInterface;
-import fr.hugman.ultimate_lucky_block.api.block.LuckyBlocks;
+import fr.hugman.ultimate_lucky_block.api.block.ULBBlocks;
+import fr.hugman.ultimate_lucky_block.api.itemgroup.ULBItemGroups;
 import fr.hugman.ultimate_lucky_block.api.lucky_event.LuckyEventTypes;
 import fr.hugman.ultimate_lucky_block.api.registry.ULBRegistries;
-import fr.hugman.ultimate_lucky_block.impl.itemgroup.LuckyBlockItemGroups;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.server.world.ServerWorld;
@@ -27,8 +27,8 @@ public class UltimateLuckyBlock implements ModInitializer {
         ULBRegistries.registerDynamics();
         Reflection.initialize(LuckyEventTypes.class);
 
-        Reflection.initialize(LuckyBlocks.class);
-        Reflection.initialize(LuckyBlockItemGroups.class);
+        Reflection.initialize(ULBBlocks.class);
+        Reflection.initialize(ULBItemGroups.class);
 
         if (PolymerResourcePackUtils.addModAssets(MOD_ID)) {
             LOGGER.info("Successfully added mod assets for " + MOD_ID);

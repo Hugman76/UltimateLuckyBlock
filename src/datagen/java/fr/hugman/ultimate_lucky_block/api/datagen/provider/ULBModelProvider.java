@@ -1,6 +1,6 @@
 package fr.hugman.ultimate_lucky_block.api.datagen.provider;
 
-import fr.hugman.ultimate_lucky_block.api.block.LuckyBlocks;
+import fr.hugman.ultimate_lucky_block.api.block.ULBBlocks;
 import fr.hugman.ultimate_lucky_block.impl.UltimateLuckyBlock;
 import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
@@ -18,15 +18,15 @@ public class ULBModelProvider extends FabricModelProvider {
 
     @Override
     public void generateBlockStateModels(BlockStateModelGenerator gen) {
-        registerLuckyBlock(gen, LuckyBlocks.LUCKY_BLOCK, "yellow");
+        registerLuckyBlock(gen, ULBBlocks.LUCKY_BLOCK, "yellow");
 
-        registerLuckyBlock(gen, LuckyBlocks.SUPER_LUCKY_BLOCK, "green");
-        registerLuckyBlock(gen, LuckyBlocks.VERY_LUCKY_BLOCK, "diamond");
-        registerLuckyBlock(gen, LuckyBlocks.UNLUCKY_BLOCK, "red");
-        registerLuckyBlock(gen, LuckyBlocks.VERY_UNLUCKY_BLOCK, "purple");
+        registerLuckyBlock(gen, ULBBlocks.SUPER_LUCKY_BLOCK, "green");
+        registerLuckyBlock(gen, ULBBlocks.VERY_LUCKY_BLOCK, "diamond");
+        registerLuckyBlock(gen, ULBBlocks.UNLUCKY_BLOCK, "red");
+        registerLuckyBlock(gen, ULBBlocks.VERY_UNLUCKY_BLOCK, "purple");
 
-        registerLuckyBlock(gen, LuckyBlocks.DOUBLE_LUCKY_BLOCK, "double_yellow", "yellow");
-        registerLuckyBlock(gen, LuckyBlocks.TRIPLE_LUCKY_BLOCK, "triple_yellow", "yellow");
+        registerLuckyBlock(gen, ULBBlocks.DOUBLE_LUCKY_BLOCK, "double_yellow", "yellow");
+        registerLuckyBlock(gen, ULBBlocks.TRIPLE_LUCKY_BLOCK, "triple_yellow", "yellow");
     }
 
     private void registerLuckyBlock(BlockStateModelGenerator gen, Block block, String suffix) {

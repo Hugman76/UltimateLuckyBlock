@@ -1,6 +1,6 @@
 package fr.hugman.ultimate_lucky_block.api.datagen.provider;
 
-import fr.hugman.ultimate_lucky_block.api.block.LuckyBlocks;
+import fr.hugman.ultimate_lucky_block.api.block.ULBBlocks;
 import fr.hugman.ultimate_lucky_block.api.world.gen.feature.ULBConfiguredFeatures;
 import fr.hugman.ultimate_lucky_block.impl.UltimateLuckyBlock;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
@@ -48,21 +48,21 @@ public class ULBConfiguredFeatureProvider extends FabricDynamicRegistryProvider 
 
         var normalProvider = new WeightedBlockStateProvider(
                 Pool.<BlockState>builder()
-                        .add(LuckyBlocks.LUCKY_BLOCK.getDefaultState(), 15)
+                        .add(ULBBlocks.LUCKY_BLOCK.getDefaultState(), 15)
 
-                        .add(LuckyBlocks.SUPER_LUCKY_BLOCK.getDefaultState(), 4)
-                        .add(LuckyBlocks.VERY_LUCKY_BLOCK.getDefaultState(), 1)
-                        .add(LuckyBlocks.UNLUCKY_BLOCK.getDefaultState(), 4)
-                        .add(LuckyBlocks.VERY_UNLUCKY_BLOCK.getDefaultState(), 1)
+                        .add(ULBBlocks.SUPER_LUCKY_BLOCK.getDefaultState(), 4)
+                        .add(ULBBlocks.VERY_LUCKY_BLOCK.getDefaultState(), 1)
+                        .add(ULBBlocks.UNLUCKY_BLOCK.getDefaultState(), 4)
+                        .add(ULBBlocks.VERY_UNLUCKY_BLOCK.getDefaultState(), 1)
 
-                        .add(LuckyBlocks.DOUBLE_LUCKY_BLOCK.getDefaultState(), 5)
-                        .add(LuckyBlocks.TRIPLE_LUCKY_BLOCK.getDefaultState(), 2)
+                        .add(ULBBlocks.DOUBLE_LUCKY_BLOCK.getDefaultState(), 5)
+                        .add(ULBBlocks.TRIPLE_LUCKY_BLOCK.getDefaultState(), 2)
         );
 
         of(registerable, ULBConfiguredFeatures.SURFACE_LUCKY_BLOCKS, Feature.SIMPLE_BLOCK, new SimpleBlockFeatureConfig(normalProvider));
         of(registerable, ULBConfiguredFeatures.MINERAL_LUCKY_BLOCKS, Feature.REPLACE_SINGLE_BLOCK, new EmeraldOreFeatureConfig(List.of(
-                OreFeatureConfig.createTarget(stoneOresReplaceables, LuckyBlocks.LUCKY_BLOCK.getDefaultState()), // TODO make a stone lucky block
-                OreFeatureConfig.createTarget(deepslateOresReplaceables, LuckyBlocks.LUCKY_BLOCK.getDefaultState()) // TODO make a deepslate lucky block
+                OreFeatureConfig.createTarget(stoneOresReplaceables, ULBBlocks.LUCKY_BLOCK.getDefaultState()), // TODO make a stone lucky block
+                OreFeatureConfig.createTarget(deepslateOresReplaceables, ULBBlocks.LUCKY_BLOCK.getDefaultState()) // TODO make a deepslate lucky block
         )));
     }
 

@@ -1,6 +1,6 @@
 package fr.hugman.ultimate_lucky_block.api.datagen.provider;
 
-import fr.hugman.ultimate_lucky_block.api.block.LuckyBlocks;
+import fr.hugman.ultimate_lucky_block.api.block.ULBBlocks;
 import fr.hugman.ultimate_lucky_block.api.loot.ULBLootTables;
 import fr.hugman.ultimate_lucky_block.api.lucky_event.*;
 import fr.hugman.ultimate_lucky_block.api.lucky_event.selector.*;
@@ -52,12 +52,12 @@ public class ULBEventProvider extends FabricDynamicRegistryProvider {
         // Set Blocks
         registerable.register(LuckyEvents.SET_BEDROCK, new SetBlockLuckyEvent(Blocks.BEDROCK));
         registerable.register(LuckyEvents.SET_RANDOM_LUCKY_BLOCK, new SetBlockLuckyEvent(
-                LuckyBlocks.SUPER_LUCKY_BLOCK,
-                LuckyBlocks.VERY_LUCKY_BLOCK,
-                LuckyBlocks.UNLUCKY_BLOCK,
-                LuckyBlocks.VERY_UNLUCKY_BLOCK,
-                LuckyBlocks.DOUBLE_LUCKY_BLOCK,
-                LuckyBlocks.TRIPLE_LUCKY_BLOCK
+                ULBBlocks.SUPER_LUCKY_BLOCK,
+                ULBBlocks.VERY_LUCKY_BLOCK,
+                ULBBlocks.UNLUCKY_BLOCK,
+                ULBBlocks.VERY_UNLUCKY_BLOCK,
+                ULBBlocks.DOUBLE_LUCKY_BLOCK,
+                ULBBlocks.TRIPLE_LUCKY_BLOCK
         ));
         registerable.register(LuckyEvents.SET_ORE_BLOCK, new SetBlockLuckyEvent(
                 Blocks.COAL_BLOCK,
