@@ -6,17 +6,17 @@ import eu.pb4.polymer.blocks.api.PolymerBlockResourceUtils;
 import eu.pb4.polymer.blocks.api.PolymerTexturedBlock;
 import fr.hugman.ultimate_lucky_block.api.lucky_event.LuckyEvent;
 import fr.hugman.ultimate_lucky_block.api.registry.ULBRegistryKeys;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.block.WireOrientation;
+import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.redstone.Orientation;
 import org.jetbrains.annotations.Nullable;
-import xyz.nucleoid.packettweaker.PacketContext;
 
 /**
  * @author Hugman
@@ -24,12 +24,12 @@ import xyz.nucleoid.packettweaker.PacketContext;
  */
 public class LuckyBlock extends Block implements PolymerTexturedBlock, LuckyBlockInterface {
     private final BlockState model;
-    private final RegistryKey<LuckyEvent> event;
+    private final ResourceKey<LuckyEvent> event;
 
-    public LuckyBlock(Settings settings, RegistryKey<LuckyEvent> event, RegistryKey<Block> key) {
+    public LuckyBlock(Properties settings, ResourceKey<LuckyEvent> event, ResourceKey<Block> key) {
         super(settings);
 
-        this.model = PolymerBlockResourceUtils.requestBlock(BlockModelType.FULL_BLOCK, PolymerBlockModel.of(key.getValue().withPrefixedPath("block/")));
+        this.model = PolymerBlockResourceUtils.requestBlock(BlockModelType.FULL_BLOCK, PolymerBlockModel.of(key.identifier().withPrefix("block/")));
         this.event = event;
     }
 
@@ -39,30 +39,30 @@ public class LuckyBlock extends Block implements PolymerTexturedBlock, LuckyBloc
     }
 
     @Override
-    public void onLuckyBlockTrigger(ServerWorld world, @Nullable PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity) {
-        world.getRegistryManager()
-                .getOrThrow(ULBRegistryKeys.LUCKY_EVENT)
+    public void onLuckyBlockTrigger(ServerLevel world, @Nullable Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity) {
+        world.registryAccess()
+                .lookupOrThrow(ULBRegistryKeys.LUCKY_EVENT)
                 .getOrThrow(this.event).value()
                 .trigger(world, player, pos, state, blockEntity);
         //TODO: add particles and sounds
     }
 
     @Override
-    protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-        if (oldState.getBlock() != state.getBlock() && world instanceof ServerWorld serverWorld) {
+    protected void onPlace(BlockState state, Level world, BlockPos pos, BlockState oldState, boolean notify) {
+        if (oldState.getBlock() != state.getBlock() && world instanceof ServerLevel serverWorld) {
             this.update(state, serverWorld, pos);
         }
     }
 
     @Override
-    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify) {
-        if (world instanceof ServerWorld serverWorld) {
+    protected void neighborChanged(BlockState state, Level world, BlockPos pos, Block sourceBlock, @Nullable Orientation wireOrientation, boolean notify) {
+        if (world instanceof ServerLevel serverWorld) {
             this.update(state, serverWorld, pos);
         }
     }
 
-    public void update(BlockState state, ServerWorld world, BlockPos pos) {
-        if (world.isReceivingRedstonePower(pos)) {
+    public void update(BlockState state, ServerLevel world, BlockPos pos) {
+        if (world.hasNeighborSignal(pos)) {
             world.removeBlock(pos, false);
             this.onLuckyBlockTrigger(world, null, pos, state, world.getBlockEntity(pos));
         }

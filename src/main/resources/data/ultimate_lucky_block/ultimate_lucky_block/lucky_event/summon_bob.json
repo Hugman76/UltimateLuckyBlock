@@ -1,6 +1,6 @@
 {
   "type": "ultimate_lucky_block:summon_entity",
-  "data": {
+  "entity_data": {
     "id": "minecraft:zombie",
     "CustomName": "Bob",
     "equipment": {

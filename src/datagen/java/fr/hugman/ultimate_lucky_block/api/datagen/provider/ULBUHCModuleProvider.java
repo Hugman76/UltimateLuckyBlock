@@ -9,28 +9,27 @@ import fr.hugman.uhc.api.modifier.Modifier;
 import fr.hugman.uhc.api.modifier.PlacedFeaturesModifier;
 import fr.hugman.uhc.api.module.UHCModule;
 import fr.hugman.uhc.api.registry.UHCRegistryKeys;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricDynamicRegistryProvider;
-import net.minecraft.item.ItemConvertible;
-import net.minecraft.registry.Registerable;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.registry.entry.RegistryEntryList;
-
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.data.worldgen.BootstrapContext;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.ItemLike;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 public class ULBUHCModuleProvider extends FabricDynamicRegistryProvider {
-    public ULBUHCModuleProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+    public ULBUHCModuleProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
         super(output, registriesFuture);
     }
 
     @Override
-    protected void configure(RegistryWrapper.WrapperLookup registries, Entries entries) {
-        var registry = registries.getOrThrow(UHCRegistryKeys.UHC_MODULE);
-        registry.streamKeys()
-                .filter(registryKey -> registryKey.getValue().getNamespace().equals(UltimateLuckyBlock.MOD_ID))
+    protected void configure(HolderLookup.Provider registries, Entries entries) {
+        var registry = registries.lookupOrThrow(UHCRegistryKeys.UHC_MODULE);
+        registry.listElementIds()
+                .filter(registryKey -> registryKey.identifier().getNamespace().equals(UltimateLuckyBlock.MOD_ID))
                 .map(key -> entries.add(registry, key))
                 .toList();
     }
@@ -40,11 +39,11 @@ public class ULBUHCModuleProvider extends FabricDynamicRegistryProvider {
         return "UHC Modules";
     }
 
-    public static void register(Registerable<UHCModule> registerable) {
-        final var placedFeatures = registerable.getRegistryLookup(RegistryKeys.PLACED_FEATURE);
+    public static void register(BootstrapContext<UHCModule> registerable) {
+        final var placedFeatures = registerable.lookup(Registries.PLACED_FEATURE);
 
         register(registerable, ULBUHCModules.LUCKY_BLOCKS, ULBBlocks.LUCKY_BLOCK,
-                new PlacedFeaturesModifier(RegistryEntryList.of(
+                new PlacedFeaturesModifier(HolderSet.direct(
                         placedFeatures.getOrThrow(ULBPlacedFeatures.SURFACE_LUCKY_BLOCKS),
                         placedFeatures.getOrThrow(ULBPlacedFeatures.MINERAL_LUCKY_BLOCKS)
                 ))
@@ -52,17 +51,17 @@ public class ULBUHCModuleProvider extends FabricDynamicRegistryProvider {
     }
 
     public static void register(
-            Registerable<UHCModule> registerable,
-            RegistryKey<UHCModule> key,
-            ItemConvertible icon,
+            BootstrapContext<UHCModule> registerable,
+            ResourceKey<UHCModule> key,
+            ItemLike icon,
             Modifier... modifiers
     ) {
         registerable.register(key, UHCModules.create(key, icon, modifiers));
     }
 
     public static void register(
-            Registerable<UHCModule> registerable,
-            RegistryKey<UHCModule> key,
+            BootstrapContext<UHCModule> registerable,
+            ResourceKey<UHCModule> key,
             Function<UHCModule.Builder, UHCModule.Builder> builderFunction,
             String... longDescriptionStrings
     ) {

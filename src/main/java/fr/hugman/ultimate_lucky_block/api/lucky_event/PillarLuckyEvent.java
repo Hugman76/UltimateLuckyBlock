@@ -2,18 +2,18 @@ package fr.hugman.ultimate_lucky_block.api.lucky_event;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.gen.HeightContext;
-import net.minecraft.world.gen.YOffset;
-import net.minecraft.world.gen.heightprovider.ConstantHeightProvider;
-import net.minecraft.world.gen.heightprovider.HeightProvider;
-import net.minecraft.world.gen.stateprovider.BlockStateProvider;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.VerticalAnchor;
+import net.minecraft.world.level.levelgen.WorldGenerationContext;
+import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
+import net.minecraft.world.level.levelgen.heightproviders.ConstantHeight;
+import net.minecraft.world.level.levelgen.heightproviders.HeightProvider;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -27,28 +27,28 @@ public record PillarLuckyEvent(
         HeightProvider top,
         HeightProvider bottom
 ) implements LuckyEvent {
-    public static final ConstantHeightProvider DEFAULT_TOP = ConstantHeightProvider.create(YOffset.TOP);
-    public static final ConstantHeightProvider DEFAULT_BOTTOM = ConstantHeightProvider.create(YOffset.fixed(0));
+    public static final ConstantHeight DEFAULT_TOP = ConstantHeight.of(VerticalAnchor.TOP);
+    public static final ConstantHeight DEFAULT_BOTTOM = ConstantHeight.of(VerticalAnchor.absolute(0));
 
     public static final MapCodec<PillarLuckyEvent> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            BlockStateProvider.TYPE_CODEC.fieldOf("state").forGetter(PillarLuckyEvent::stateProvider),
+            BlockStateProvider.CODEC.fieldOf("state").forGetter(PillarLuckyEvent::stateProvider),
             HeightProvider.CODEC.optionalFieldOf("top", DEFAULT_TOP).forGetter(PillarLuckyEvent::top),
             HeightProvider.CODEC.optionalFieldOf("bottom", DEFAULT_BOTTOM).forGetter(PillarLuckyEvent::bottom)
     ).apply(instance, PillarLuckyEvent::new));
 
     public PillarLuckyEvent(BlockStateProvider provider, boolean top, boolean bottom) {
         this(provider,
-                top ? ConstantHeightProvider.create(YOffset.TOP) : ConstantHeightProvider.create(YOffset.fixed(0)),
-                bottom ? ConstantHeightProvider.create(YOffset.BOTTOM) : ConstantHeightProvider.create(YOffset.fixed(0))
+                top ? ConstantHeight.of(VerticalAnchor.TOP) : ConstantHeight.of(VerticalAnchor.absolute(0)),
+                bottom ? ConstantHeight.of(VerticalAnchor.BOTTOM) : ConstantHeight.of(VerticalAnchor.absolute(0))
         );
     }
 
     public PillarLuckyEvent(BlockState state, boolean top, boolean bottom) {
-        this(BlockStateProvider.of(state), top, bottom);
+        this(BlockStateProvider.simple(state), top, bottom);
     }
 
     public PillarLuckyEvent(Block block, boolean top, boolean bottom) {
-        this(BlockStateProvider.of(block), top, bottom);
+        this(BlockStateProvider.simple(block), top, bottom);
     }
 
     public PillarLuckyEvent(BlockStateProvider provider) {
@@ -56,20 +56,20 @@ public record PillarLuckyEvent(
     }
 
     public PillarLuckyEvent(BlockState state) {
-        this(BlockStateProvider.of(state));
+        this(BlockStateProvider.simple(state));
     }
 
     public PillarLuckyEvent(Block block) {
-        this(BlockStateProvider.of(block));
+        this(BlockStateProvider.simple(block));
     }
 
-    public void trigger(ServerWorld world, @Nullable PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity) {
-        world.setBlockState(pos, stateProvider.get(world.getRandom(), pos), Block.NOTIFY_ALL);
-        HeightContext heightContext = new HeightContext(world.getChunkManager().getChunkGenerator(), world);
-        var topY = getYPatched(top, pos.getY(), world.getRandom(), heightContext);
-        var bottomY = getYPatched(bottom, pos.getY(), world.getRandom(), heightContext);
+    public void trigger(ServerLevel level, @Nullable Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity) {
+        level.setBlock(pos, stateProvider.getState(level, level.getRandom(), pos), Block.UPDATE_ALL);
+        WorldGenerationContext heightContext = new WorldGenerationContext(level.getChunkSource().getGenerator(), level);
+        var topY = getYPatched(top, pos.getY(), level.getRandom(), heightContext);
+        var bottomY = getYPatched(bottom, pos.getY(), level.getRandom(), heightContext);
         for (int y = bottomY; y < topY; y++) {
-            world.setBlockState(new BlockPos(pos.getX(), y, pos.getZ()), stateProvider.get(world.getRandom(), pos), Block.NOTIFY_ALL);
+            level.setBlock(new BlockPos(pos.getX(), y, pos.getZ()), stateProvider.getState(level, level.getRandom(), pos), Block.UPDATE_ALL);
         }
     }
 
@@ -78,12 +78,12 @@ public record PillarLuckyEvent(
         return LuckyEventTypes.WORLD_PILLAR;
     }
 
-    private static int getYPatched(HeightProvider provider, int baseY, Random random, HeightContext heightContext) {
+    private static int getYPatched(HeightProvider provider, int baseY, RandomSource random, WorldGenerationContext heightContext) {
         //IDK how to make it relative to the baseY, so we just add it
-        var value = provider.get(random, heightContext);
-        if(value == heightContext.getHeight() || value == heightContext.getMinY()) {
+        var value = provider.sample(random, heightContext);
+        if(value == heightContext.getGenDepth() || value == heightContext.getMinGenY()) {
             return value;
         }
-        return Math.min(heightContext.getHeight(), Math.max(heightContext.getMinY(), value + baseY));
+        return Math.min(heightContext.getGenDepth(), Math.max(heightContext.getMinGenY(), value + baseY));
     }
 }

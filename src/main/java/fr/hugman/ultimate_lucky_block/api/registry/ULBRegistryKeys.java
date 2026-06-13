@@ -3,14 +3,14 @@ package fr.hugman.ultimate_lucky_block.api.registry;
 import fr.hugman.ultimate_lucky_block.api.lucky_event.LuckyEvent;
 import fr.hugman.ultimate_lucky_block.api.lucky_event.LuckyEventType;
 import fr.hugman.ultimate_lucky_block.impl.UltimateLuckyBlock;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 
 /**
  * @author Hugman
  * @since 1.0.0
  */
 public class ULBRegistryKeys {
-    public static final RegistryKey<Registry<LuckyEvent>> LUCKY_EVENT = RegistryKey.ofRegistry(UltimateLuckyBlock.id("lucky_event"));
-    public static final RegistryKey<Registry<LuckyEventType<?>>> LUCKY_EVENT_TYPE = RegistryKey.ofRegistry(UltimateLuckyBlock.id("lucky_event_type"));
+    public static final ResourceKey<Registry<LuckyEvent>> LUCKY_EVENT = ResourceKey.createRegistryKey(UltimateLuckyBlock.id("lucky_event"));
+    public static final ResourceKey<Registry<LuckyEventType<?>>> LUCKY_EVENT_TYPE = ResourceKey.createRegistryKey(UltimateLuckyBlock.id("lucky_event_type"));
 }

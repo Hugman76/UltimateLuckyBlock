@@ -6,20 +6,19 @@ import fr.hugman.ultimate_lucky_block.api.lucky_event.*;
 import fr.hugman.ultimate_lucky_block.api.lucky_event.selector.*;
 import fr.hugman.ultimate_lucky_block.api.registry.ULBRegistryKeys;
 import fr.hugman.ultimate_lucky_block.impl.UltimateLuckyBlock;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricDynamicRegistryProvider;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.Registerable;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.collection.Pool;
-import net.minecraft.world.gen.stateprovider.WeightedBlockStateProvider;
-
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.data.worldgen.BootstrapContext;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.random.WeightedList;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.feature.stateproviders.WeightedStateProvider;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -27,15 +26,15 @@ import java.util.concurrent.CompletableFuture;
  * @since 1.0.0
  */
 public class ULBEventProvider extends FabricDynamicRegistryProvider {
-    public ULBEventProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+    public ULBEventProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
         super(output, registriesFuture);
     }
 
     @Override
-    protected void configure(RegistryWrapper.WrapperLookup registries, Entries entries) {
-        var registry = registries.getOrThrow(ULBRegistryKeys.LUCKY_EVENT);
-        registry.streamKeys()
-                .filter(registryKey -> registryKey.getValue().getNamespace().equals(UltimateLuckyBlock.MOD_ID))
+    protected void configure(HolderLookup.Provider registries, Entries entries) {
+        var registry = registries.lookupOrThrow(ULBRegistryKeys.LUCKY_EVENT);
+        registry.listElementIds()
+                .filter(registryKey -> registryKey.identifier().getNamespace().equals(UltimateLuckyBlock.MOD_ID))
                 .map(key -> entries.add(registry, key))
                 .toList();
     }
@@ -46,8 +45,8 @@ public class ULBEventProvider extends FabricDynamicRegistryProvider {
     }
 
 
-    public static void register(Registerable<LuckyEvent> registerable) {
-        var events = registerable.getRegistryLookup(ULBRegistryKeys.LUCKY_EVENT);
+    public static void register(BootstrapContext<LuckyEvent> registerable) {
+        var events = registerable.lookup(ULBRegistryKeys.LUCKY_EVENT);
 
         // Set Blocks
         registerable.register(LuckyEvents.SET_BEDROCK, new SetBlockLuckyEvent(Blocks.BEDROCK));
@@ -72,23 +71,23 @@ public class ULBEventProvider extends FabricDynamicRegistryProvider {
 
         // Pillars
         registerable.register(LuckyEvents.SET_BEDROCK_WORLD_PILLAR, new PillarLuckyEvent(Blocks.BEDROCK, true, true));
-        registerable.register(LuckyEvents.SET_WOOL_PILLAR, new PillarLuckyEvent(new WeightedBlockStateProvider(new Pool.Builder<BlockState>()
-                .add(Blocks.WHITE_WOOL.getDefaultState())
-                .add(Blocks.ORANGE_WOOL.getDefaultState())
-                .add(Blocks.MAGENTA_WOOL.getDefaultState())
-                .add(Blocks.LIGHT_BLUE_WOOL.getDefaultState())
-                .add(Blocks.YELLOW_WOOL.getDefaultState())
-                .add(Blocks.LIME_WOOL.getDefaultState())
-                .add(Blocks.PINK_WOOL.getDefaultState())
-                .add(Blocks.GRAY_WOOL.getDefaultState())
-                .add(Blocks.LIGHT_GRAY_WOOL.getDefaultState())
-                .add(Blocks.CYAN_WOOL.getDefaultState())
-                .add(Blocks.PURPLE_WOOL.getDefaultState())
-                .add(Blocks.BLUE_WOOL.getDefaultState())
-                .add(Blocks.BROWN_WOOL.getDefaultState())
-                .add(Blocks.GREEN_WOOL.getDefaultState())
-                .add(Blocks.RED_WOOL.getDefaultState())
-                .add(Blocks.BLACK_WOOL.getDefaultState())
+        registerable.register(LuckyEvents.SET_WOOL_PILLAR, new PillarLuckyEvent(new WeightedStateProvider(new WeightedList.Builder<BlockState>()
+                .add(Blocks.WHITE_WOOL.defaultBlockState())
+                .add(Blocks.ORANGE_WOOL.defaultBlockState())
+                .add(Blocks.MAGENTA_WOOL.defaultBlockState())
+                .add(Blocks.LIGHT_BLUE_WOOL.defaultBlockState())
+                .add(Blocks.YELLOW_WOOL.defaultBlockState())
+                .add(Blocks.LIME_WOOL.defaultBlockState())
+                .add(Blocks.PINK_WOOL.defaultBlockState())
+                .add(Blocks.GRAY_WOOL.defaultBlockState())
+                .add(Blocks.LIGHT_GRAY_WOOL.defaultBlockState())
+                .add(Blocks.CYAN_WOOL.defaultBlockState())
+                .add(Blocks.PURPLE_WOOL.defaultBlockState())
+                .add(Blocks.BLUE_WOOL.defaultBlockState())
+                .add(Blocks.BROWN_WOOL.defaultBlockState())
+                .add(Blocks.GREEN_WOOL.defaultBlockState())
+                .add(Blocks.RED_WOOL.defaultBlockState())
+                .add(Blocks.BLACK_WOOL.defaultBlockState())
         )));
 
         // Summon Entities
@@ -151,10 +150,10 @@ public class ULBEventProvider extends FabricDynamicRegistryProvider {
     }
 
     private static SummonEntityLuckyEvent summonHappyGhast(Item harness) {
-        var compound = new NbtCompound();
-        var equipment = new NbtCompound();
-        var itemElement = new NbtCompound();
-        itemElement.putString("id", Registries.ITEM.getId(harness).toString());
+        var compound = new CompoundTag();
+        var equipment = new CompoundTag();
+        var itemElement = new CompoundTag();
+        itemElement.putString("id", BuiltInRegistries.ITEM.getKey(harness).toString());
         equipment.put("body", itemElement);
         compound.put("equipment", equipment);
         return SummonEntityLuckyEvent.builder(EntityType.HAPPY_GHAST)

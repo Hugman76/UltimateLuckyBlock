@@ -1,12 +1,11 @@
 plugins {
-    id "fabric-loom" version "${loom_version}"
+    id "net.fabricmc.fabric-loom" version "${loom_version}"
     id 'maven-publish'
 }
 
-sourceCompatibility = JavaVersion.VERSION_21
-targetCompatibility = JavaVersion.VERSION_21
-
-archivesBaseName = project.archives_base_name
+base {
+    archivesName = project.archives_base_name
+}
 group = project.maven_group
 
 def env = System.getenv()
@@ -24,16 +23,15 @@ repositories {
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
-    modImplementation "xyz.nucleoid:plasmid:${project.plasmid_version}"
+    implementation "xyz.nucleoid:plasmid:${project.plasmid_version}"
 
-    modImplementation "eu.pb4:polymer-autohost:${project.polymer_version}"
+    implementation "eu.pb4:polymer-autohost:${project.polymer_version}"
 
-    modImplementation "fr.hugman:uhc:${project.uhc_version}"
+    implementation "fr.hugman:uhc:${project.uhc_version}"
 }
 
 processResources {
@@ -54,7 +52,7 @@ fabricApi {
 
 tasks.withType(JavaCompile).configureEach {
     it.options.encoding = "UTF-8"
-    it.options.release = 21
+    it.options.release = 25
 }
 
 java {

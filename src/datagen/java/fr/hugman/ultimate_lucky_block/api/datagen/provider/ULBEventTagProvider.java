@@ -2,10 +2,9 @@ package fr.hugman.ultimate_lucky_block.api.datagen.provider;
 
 import fr.hugman.ultimate_lucky_block.api.lucky_event.LuckyEvent;
 import fr.hugman.ultimate_lucky_block.api.registry.ULBRegistryKeys;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
-import net.minecraft.registry.RegistryWrapper;
-
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
+import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagsProvider;
+import net.minecraft.core.HolderLookup;
 import java.util.concurrent.CompletableFuture;
 
 import static fr.hugman.ultimate_lucky_block.api.lucky_event.LuckyEventTags.*;
@@ -15,13 +14,13 @@ import static fr.hugman.ultimate_lucky_block.api.lucky_event.LuckyEvents.*;
  * @author Hugman
  * @since 1.0.0
  */
-public class ULBEventTagProvider extends FabricTagProvider<LuckyEvent> {
-    public ULBEventTagProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture) {
+public class ULBEventTagProvider extends FabricTagsProvider<LuckyEvent> {
+    public ULBEventTagProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> completableFuture) {
         super(output, ULBRegistryKeys.LUCKY_EVENT, completableFuture);
     }
 
     @Override
-    protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
+    protected void addTags(HolderLookup.Provider wrapperLookup) {
         builder(VERY_UNLUCKY).add(
                         SUMMON_WITHER,
                         SUMMON_WARDEN,

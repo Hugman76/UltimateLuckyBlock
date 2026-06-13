@@ -4,19 +4,20 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fr.hugman.ultimate_lucky_block.impl.UltimateLuckyBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.component.type.NbtComponent;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.mob.Angerable;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.passive.TameableEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.Registries;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.NeutralMob;
+import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.TypedEntityData;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -26,47 +27,46 @@ import org.jetbrains.annotations.Nullable;
  * @since 1.0.0
  */
 public record SummonEntityLuckyEvent(
-        NbtComponent data,
+        TypedEntityData<EntityType<?>> entityData,
         boolean shouldTarget,
         boolean tamed
 ) implements LuckyEvent {
-    public static final NbtComponent DEFAULT_DATA = NbtComponent.DEFAULT;
     public static final boolean DEFAULT_SHOUlD_TARGET = false;
     public static final boolean DEFAULT_TAMED = false;
 
     public static final MapCodec<SummonEntityLuckyEvent> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            NbtComponent.CODEC_WITH_ID.optionalFieldOf("data", DEFAULT_DATA).forGetter(SummonEntityLuckyEvent::data),
+            TypedEntityData.codec(EntityType.CODEC).fieldOf("entity_data").forGetter(SummonEntityLuckyEvent::entityData),
             Codec.BOOL.optionalFieldOf("should_target", false).forGetter(SummonEntityLuckyEvent::shouldTarget),
             Codec.BOOL.optionalFieldOf("tamed", false).forGetter(SummonEntityLuckyEvent::tamed)
     ).apply(instance, SummonEntityLuckyEvent::new));
 
     public SummonEntityLuckyEvent(EntityType<?> entityType) {
-        this(withType(new NbtCompound(), entityType), DEFAULT_SHOUlD_TARGET, DEFAULT_TAMED);
+        this(TypedEntityData.of(entityType, new CompoundTag()), DEFAULT_SHOUlD_TARGET, DEFAULT_TAMED);
     }
 
-    public void trigger(ServerWorld world, @Nullable PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity) {
-        var entity = EntityType.loadEntityWithPassengers(this.data.copyNbt(), world, SpawnReason.MOB_SUMMONED, e -> {
-            e.refreshPositionAndAngles(pos, e.getRandom().nextFloat() * 360.0F, 0.0F);
+    public void trigger(ServerLevel world, @Nullable Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity) {
+        var entity = EntityType.loadEntityRecursive(this.entityData.type(), this.entityData.copyTagWithoutId(), world, EntitySpawnReason.MOB_SUMMONED, e -> {
+            e.snapTo(pos, e.getRandom().nextFloat() * 360.0F, 0.0F);
             return e;
         });
         if (entity == null) {
-            UltimateLuckyBlock.LOGGER.error("Failed to summon entity from NBT: {}", this.data);
+            UltimateLuckyBlock.LOGGER.error("Failed to summon entity from NBT: {}", this.entityData);
             return;
         }
 
-        if (this.tamed && entity instanceof TameableEntity tameable && player != null) {
-            tameable.setTamedBy(player);
+        if (this.tamed && entity instanceof TamableAnimal tameable && player != null) {
+            tameable.tame(player);
         }
-        if (entity instanceof MobEntity mob) {
-            mob.initialize(world, world.getLocalDifficulty(pos), SpawnReason.MOB_SUMMONED, null);
+        if (entity instanceof Mob mob) {
+            mob.finalizeSpawn(world, world.getCurrentDifficultyAt(pos), EntitySpawnReason.MOB_SUMMONED, null);
             if (this.shouldTarget  && player != null) {
                 mob.setTarget(player);
             }
         }
-        if (entity instanceof Angerable angerable && this.shouldTarget && player != null) {
+        if (entity instanceof NeutralMob angerable && this.shouldTarget && player != null) {
             angerable.setTarget(player);
         }
-        if (!world.spawnNewEntityAndPassengers(entity)) {
+        if (!world.tryAddFreshEntityWithPassengers(entity)) {
             UltimateLuckyBlock.LOGGER.error("Failed to spawn entity: {}", entity);
         }
     }
@@ -82,7 +82,7 @@ public record SummonEntityLuckyEvent(
 
     public static class Builder {
         private final EntityType<?> type;
-        private NbtCompound data = DEFAULT_DATA.copyNbt();
+        private CompoundTag data = new CompoundTag();
         private boolean target = DEFAULT_SHOUlD_TARGET;
         private boolean tamed = DEFAULT_TAMED;
 
@@ -90,7 +90,7 @@ public record SummonEntityLuckyEvent(
             this.type = type;
         }
 
-        public Builder data(NbtCompound data) {
+        public Builder data(CompoundTag data) {
             this.data = data;
             return this;
         }
@@ -111,12 +111,12 @@ public record SummonEntityLuckyEvent(
         }
 
         public SummonEntityLuckyEvent build() {
-            return new SummonEntityLuckyEvent(withType(data, type), target, tamed);
+            return new SummonEntityLuckyEvent(TypedEntityData.of(type, data), target, tamed);
         }
     }
 
-    private static NbtComponent withType(NbtCompound compound, EntityType<?> entityType) {
-        compound.putString("id", Registries.ENTITY_TYPE.getId(entityType).toString());
-        return NbtComponent.of(compound);
+    private static CustomData withType(CompoundTag compound, EntityType<?> entityType) {
+        compound.putString("id", BuiltInRegistries.ENTITY_TYPE.getKey(entityType).toString());
+        return CustomData.of(compound);
     }
 }

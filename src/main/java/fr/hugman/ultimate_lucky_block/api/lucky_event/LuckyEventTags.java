@@ -2,7 +2,7 @@ package fr.hugman.ultimate_lucky_block.api.lucky_event;
 
 import fr.hugman.ultimate_lucky_block.api.registry.ULBRegistryKeys;
 import fr.hugman.ultimate_lucky_block.impl.UltimateLuckyBlock;
-import net.minecraft.registry.tag.TagKey;
+import net.minecraft.tags.TagKey;
 
 /**
  * @author Hugman
@@ -16,6 +16,6 @@ public class LuckyEventTags {
     public static final TagKey<LuckyEvent> VERY_LUCKY = of("very_lucky");
 
     private static TagKey<LuckyEvent> of(String path) {
-        return TagKey.of(ULBRegistryKeys.LUCKY_EVENT, UltimateLuckyBlock.id(path));
+        return TagKey.create(ULBRegistryKeys.LUCKY_EVENT, UltimateLuckyBlock.id(path));
     }
 }

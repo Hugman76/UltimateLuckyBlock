@@ -8,19 +8,19 @@ import fr.hugman.uhc.api.config.UHCGameConfig;
 import fr.hugman.uhc.api.game.UHCGameTeamSize;
 import fr.hugman.uhc.api.game.UHCGameTypes;
 import fr.hugman.uhc.api.registry.UHCRegistryKeys;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricDynamicRegistryProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.registry.Registerable;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.text.Text;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.worldgen.BootstrapContext;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.Items;
 import xyz.nucleoid.plasmid.api.game.common.config.PlayerLimiterConfig;
 import xyz.nucleoid.plasmid.api.game.common.config.WaitingLobbyConfig;
 import xyz.nucleoid.plasmid.api.game.config.CustomValuesConfig;
 import xyz.nucleoid.plasmid.api.game.config.GameConfig;
-import xyz.nucleoid.plasmid.api.game.config.GameConfigs;
+import xyz.nucleoid.plasmid.api.registry.PlasmidRegistryKeys;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -29,15 +29,15 @@ import java.util.concurrent.CompletableFuture;
  * @since 1.0.0
  */
 public class ULBGameProvider extends FabricDynamicRegistryProvider {
-    public ULBGameProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+    public ULBGameProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
         super(output, registriesFuture);
     }
 
     @Override
-    protected void configure(RegistryWrapper.WrapperLookup registries, Entries entries) {
-        var registry = registries.getOrThrow(GameConfigs.REGISTRY_KEY);
-        registry.streamKeys()
-                .filter(registryKey -> registryKey.getValue().getNamespace().equals(UltimateLuckyBlock.MOD_ID))
+    protected void configure(HolderLookup.Provider registries, Entries entries) {
+        var registry = registries.lookupOrThrow(PlasmidRegistryKeys.GAME_CONFIG);
+        registry.listElementIds()
+                .filter(registryKey -> registryKey.identifier().getNamespace().equals(UltimateLuckyBlock.MOD_ID))
                 .map(key -> entries.add(registry, key))
                 .toList();
     }
@@ -48,8 +48,8 @@ public class ULBGameProvider extends FabricDynamicRegistryProvider {
     }
 
 
-    public static void register(Registerable<GameConfig<?>> registerable) {
-        final var configs = registerable.getRegistryLookup(UHCRegistryKeys.UHC_CONFIG);
+    public static void register(BootstrapContext<GameConfig<?>> registerable) {
+        final var configs = registerable.lookup(UHCRegistryKeys.UHC_CONFIG);
 
         var uhc = configs.getOrThrow(ULBUHCConfigs.LUCKY_UHC);
         var uhcRun = configs.getOrThrow(ULBUHCConfigs.LUCKY_UHCRUN);
@@ -61,11 +61,11 @@ public class ULBGameProvider extends FabricDynamicRegistryProvider {
         }
     }
 
-    private static GameConfig<?> createUHC(RegistryEntry<UHCConfig> config, UHCGameTeamSize teamSize) {
+    private static GameConfig<?> createUHC(Holder<UHCConfig> config, UHCGameTeamSize teamSize) {
         return new GameConfig<>(
                 UHCGameTypes.STANDARD,
-                Text.translatable("game.generic.mode", Text.translatable("game." + config.getKey().get().getValue().getPath()), Text.translatable("mode." + teamSize.getName())),
-                null, null, new ItemStack(Items.GRASS_BLOCK), CustomValuesConfig.empty(),
+                Component.translatable("game.generic.mode", Component.translatable("game." + config.unwrapKey().get().identifier().getPath()), Component.translatable("mode." + teamSize.getName())),
+                null, null, new ItemStackTemplate(Items.GRASS_BLOCK), CustomValuesConfig.empty(),
                 new UHCGameConfig(
                         new WaitingLobbyConfig(new PlayerLimiterConfig(), teamSize.getMinPlayers(), teamSize.getThresholdPlayers(), WaitingLobbyConfig.Countdown.DEFAULT),
                         teamSize.getTeamsize(),

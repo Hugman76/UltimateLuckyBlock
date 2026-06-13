@@ -6,10 +6,10 @@ import fr.hugman.ultimate_lucky_block.api.registry.ULBRegistryKeys;
 import fr.hugman.ultimate_lucky_block.impl.UltimateLuckyBlock;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
-import net.minecraft.registry.RegistryBuilder;
-import net.minecraft.registry.RegistryKeys;
+import net.minecraft.core.RegistrySetBuilder;
+import net.minecraft.core.registries.Registries;
 import org.jetbrains.annotations.Nullable;
-import xyz.nucleoid.plasmid.api.game.config.GameConfigs;
+import xyz.nucleoid.plasmid.api.registry.PlasmidRegistryKeys;
 
 public class ULBDataGenerator implements DataGeneratorEntrypoint {
     @Override
@@ -40,19 +40,19 @@ public class ULBDataGenerator implements DataGeneratorEntrypoint {
     }
 
     @Override
-    public void buildRegistry(RegistryBuilder registryBuilder) {
+    public void buildRegistry(RegistrySetBuilder registryBuilder) {
         // - Lucky Block
-        registryBuilder.addRegistry(ULBRegistryKeys.LUCKY_EVENT, ULBEventProvider::register);
-        registryBuilder.addRegistry(ULBRegistryKeys.LUCKY_EVENT, ULBPoolEventProvider::register);
+        registryBuilder.add(ULBRegistryKeys.LUCKY_EVENT, ULBEventProvider::register);
+        registryBuilder.add(ULBRegistryKeys.LUCKY_EVENT, ULBPoolEventProvider::register);
 
         // - UHC
-        registryBuilder.addRegistry(GameConfigs.REGISTRY_KEY, ULBGameProvider::register);
-        registryBuilder.addRegistry(UHCRegistryKeys.UHC_CONFIG, ULBUHCConfigProvider::register);
-        registryBuilder.addRegistry(UHCRegistryKeys.UHC_MODULE, ULBUHCModuleProvider::register);
+        registryBuilder.add(PlasmidRegistryKeys.GAME_CONFIG, ULBGameProvider::register);
+        registryBuilder.add(UHCRegistryKeys.UHC_CONFIG, ULBUHCConfigProvider::register);
+        registryBuilder.add(UHCRegistryKeys.UHC_MODULE, ULBUHCModuleProvider::register);
 
         // - World Generation
-        registryBuilder.addRegistry(RegistryKeys.CONFIGURED_FEATURE, ULBConfiguredFeatureProvider::register);
-        registryBuilder.addRegistry(RegistryKeys.PLACED_FEATURE, ULBPlacedFeatureProvider::register);
+        registryBuilder.add(Registries.CONFIGURED_FEATURE, ULBConfiguredFeatureProvider::register);
+        registryBuilder.add(Registries.PLACED_FEATURE, ULBPlacedFeatureProvider::register);
     }
 
     @Override

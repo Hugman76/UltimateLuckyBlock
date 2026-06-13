@@ -7,8 +7,8 @@ import fr.hugman.ultimate_lucky_block.api.lucky_event.selector.RepeatSelectorLuc
 import fr.hugman.ultimate_lucky_block.api.lucky_event.selector.WeightedListSelectorLuckyEvent;
 import fr.hugman.ultimate_lucky_block.api.registry.ULBRegistries;
 import fr.hugman.ultimate_lucky_block.impl.UltimateLuckyBlock;
-import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.Identifier;
 
 /**
  * Lucky event types registered by the Lucky Block mod.

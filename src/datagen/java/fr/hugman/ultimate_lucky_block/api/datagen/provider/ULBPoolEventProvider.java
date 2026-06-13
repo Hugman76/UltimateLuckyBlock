@@ -7,11 +7,10 @@ import fr.hugman.ultimate_lucky_block.api.lucky_event.selector.RepeatSelectorLuc
 import fr.hugman.ultimate_lucky_block.api.lucky_event.selector.WeightedListSelectorLuckyEvent;
 import fr.hugman.ultimate_lucky_block.api.registry.ULBRegistryKeys;
 import fr.hugman.ultimate_lucky_block.impl.UltimateLuckyBlock;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricDynamicRegistryProvider;
-import net.minecraft.registry.Registerable;
-import net.minecraft.registry.RegistryWrapper;
-
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.worldgen.BootstrapContext;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -25,15 +24,15 @@ public class ULBPoolEventProvider extends FabricDynamicRegistryProvider {
     private static final int[] UNLUCKY_LUCK_DISTRIBUTION = {5, 20, 10, 3, 1};
     private static final int[] VERY_UNLUCKY_LUCK_DISTRIBUTION = {20, 15, 5, 3};
 
-    public ULBPoolEventProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+    public ULBPoolEventProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
         super(output, registriesFuture);
     }
 
     @Override
-    protected void configure(RegistryWrapper.WrapperLookup registries, Entries entries) {
-        var registry = registries.getOrThrow(ULBRegistryKeys.LUCKY_EVENT);
-        registry.streamKeys()
-                .filter(registryKey -> registryKey.getValue().getNamespace().equals(UltimateLuckyBlock.MOD_ID))
+    protected void configure(HolderLookup.Provider registries, Entries entries) {
+        var registry = registries.lookupOrThrow(ULBRegistryKeys.LUCKY_EVENT);
+        registry.listElementIds()
+                .filter(registryKey -> registryKey.identifier().getNamespace().equals(UltimateLuckyBlock.MOD_ID))
                 .map(key -> entries.add(registry, key))
                 .toList();
     }
@@ -44,8 +43,8 @@ public class ULBPoolEventProvider extends FabricDynamicRegistryProvider {
     }
 
 
-    public static void register(Registerable<LuckyEvent> registerable) {
-        var events = registerable.getRegistryLookup(ULBRegistryKeys.LUCKY_EVENT);
+    public static void register(BootstrapContext<LuckyEvent> registerable) {
+        var events = registerable.lookup(ULBRegistryKeys.LUCKY_EVENT);
 
         registerable.register(LuckyPoolEvents.NORMAL, WeightedListSelectorLuckyEvent.builder(events)
                 .add(LUCK_DISTRIBUTION[0], 0, LuckyEventTags.VERY_UNLUCKY)

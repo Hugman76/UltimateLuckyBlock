@@ -6,12 +6,11 @@ import fr.hugman.ultimate_lucky_block.api.lucky_event.LuckyEvent;
 import fr.hugman.ultimate_lucky_block.api.lucky_event.LuckyEventType;
 import fr.hugman.ultimate_lucky_block.api.lucky_event.LuckyEventTypes;
 import fr.hugman.ultimate_lucky_block.api.registry.RegistryEntryListBuilder;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.entry.RegistryEntryList;
-import net.minecraft.util.dynamic.Codecs;
-import net.minecraft.util.math.random.Random;
-
 import java.util.List;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.util.ExtraCodecs;
+import net.minecraft.util.RandomSource;
 
 /**
  * Triggers a list of lucky events simultaneously.
@@ -19,12 +18,12 @@ import java.util.List;
  * @author Hugman
  * @since 1.0.0
  */
-public record AllOfSelectorLuckyEvent(RegistryEntryList<LuckyEvent> events) implements SelectorLuckyEvent {
+public record AllOfSelectorLuckyEvent(HolderSet<LuckyEvent> events) implements SelectorLuckyEvent {
     public static final MapCodec<AllOfSelectorLuckyEvent> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            Codecs.nonEmptyEntryList(LuckyEvent.LIST_CODEC).fieldOf("events").forGetter(AllOfSelectorLuckyEvent::events)
+            ExtraCodecs.nonEmptyHolderSet(LuckyEvent.LIST_CODEC).fieldOf("events").forGetter(AllOfSelectorLuckyEvent::events)
     ).apply(instance, AllOfSelectorLuckyEvent::new));
 
-    public List<RegistryEntry<LuckyEvent>> get(Random random, float luck) {
+    public List<Holder<LuckyEvent>> get(RandomSource random, float luck) {
         return events.stream().toList();
     }
 
@@ -46,7 +45,7 @@ public record AllOfSelectorLuckyEvent(RegistryEntryList<LuckyEvent> events) impl
         }
 
         public AllOfSelectorLuckyEvent build() {
-            return new AllOfSelectorLuckyEvent(RegistryEntryList.of(entries.build()));
+            return new AllOfSelectorLuckyEvent(HolderSet.direct(entries.build()));
         }
     }
 }

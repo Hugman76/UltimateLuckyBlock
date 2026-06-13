@@ -2,16 +2,16 @@ package fr.hugman.ultimate_lucky_block.api.lucky_event;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.collection.Pool;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3i;
-import net.minecraft.world.gen.stateprovider.BlockStateProvider;
-import net.minecraft.world.gen.stateprovider.WeightedBlockStateProvider;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.random.WeightedList;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
+import net.minecraft.world.level.levelgen.feature.stateproviders.WeightedStateProvider;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -27,7 +27,7 @@ public record SetBlockLuckyEvent(
     public static final Vec3i DEFAULT_OFFSET = Vec3i.ZERO;
 
     public static final MapCodec<SetBlockLuckyEvent> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            BlockStateProvider.TYPE_CODEC.fieldOf("state_provider").forGetter(SetBlockLuckyEvent::stateProvider),
+            BlockStateProvider.CODEC.fieldOf("state_provider").forGetter(SetBlockLuckyEvent::stateProvider),
             Vec3i.CODEC.optionalFieldOf("offset", DEFAULT_OFFSET).forGetter(SetBlockLuckyEvent::offset)
     ).apply(instance, SetBlockLuckyEvent::new));
 
@@ -36,19 +36,19 @@ public record SetBlockLuckyEvent(
     }
 
     public SetBlockLuckyEvent(BlockState state) {
-        this(BlockStateProvider.of(state));
+        this(BlockStateProvider.simple(state));
     }
 
     public SetBlockLuckyEvent(Block block) {
-        this(BlockStateProvider.of(block));
+        this(BlockStateProvider.simple(block));
     }
 
     public SetBlockLuckyEvent(Block... blocks) {
         this(getListProvider(blocks), DEFAULT_OFFSET);
     }
 
-    public void trigger(ServerWorld world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity) {
-        world.setBlockState(pos.add(offset), stateProvider.get(world.getRandom(), pos), Block.NOTIFY_ALL);
+    public void trigger(ServerLevel level, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity) {
+        level.setBlock(pos.offset(offset), stateProvider.getState(level, level.getRandom(), pos), Block.UPDATE_ALL);
     }
 
     @Override
@@ -56,11 +56,11 @@ public record SetBlockLuckyEvent(
         return LuckyEventTypes.SET_BLOCK;
     }
 
-    private static WeightedBlockStateProvider getListProvider(Block... blocks) {
-        var pool = new Pool.Builder<BlockState>();
+    private static WeightedStateProvider getListProvider(Block... blocks) {
+        var pool = new WeightedList.Builder<BlockState>();
         for (Block block : blocks) {
-            pool.add(block.getDefaultState());
+            pool.add(block.defaultBlockState());
         }
-        return new WeightedBlockStateProvider(pool);
+        return new WeightedStateProvider(pool);
     }
 }

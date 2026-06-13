@@ -3,15 +3,15 @@ package fr.hugman.ultimate_lucky_block.api.lucky_event;
 import com.mojang.serialization.Codec;
 import fr.hugman.ultimate_lucky_block.api.registry.ULBRegistries;
 import fr.hugman.ultimate_lucky_block.api.registry.ULBRegistryKeys;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.registry.RegistryCodecs;
-import net.minecraft.registry.entry.RegistryElementCodec;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.entry.RegistryEntryList;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.RegistryCodecs;
+import net.minecraft.resources.RegistryFileCodec;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -23,12 +23,12 @@ import org.jetbrains.annotations.Nullable;
  * @since 1.0.0
  */
 public interface LuckyEvent {
-    Codec<LuckyEvent> TYPE_CODEC = ULBRegistries.LUCKY_EVENT_TYPE.getCodec().dispatch(LuckyEvent::getType, LuckyEventType::codec);
+    Codec<LuckyEvent> TYPE_CODEC = ULBRegistries.LUCKY_EVENT_TYPE.byNameCodec().dispatch(LuckyEvent::getType, LuckyEventType::codec);
 
-    Codec<RegistryEntry<LuckyEvent>> ENTRY_CODEC = RegistryElementCodec.of(ULBRegistryKeys.LUCKY_EVENT, TYPE_CODEC);
-    Codec<RegistryEntryList<LuckyEvent>> LIST_CODEC = RegistryCodecs.entryList(ULBRegistryKeys.LUCKY_EVENT, TYPE_CODEC);
+    Codec<Holder<LuckyEvent>> ENTRY_CODEC = RegistryFileCodec.create(ULBRegistryKeys.LUCKY_EVENT, TYPE_CODEC);
+    Codec<HolderSet<LuckyEvent>> LIST_CODEC = RegistryCodecs.homogeneousList(ULBRegistryKeys.LUCKY_EVENT, TYPE_CODEC);
 
     LuckyEventType<?> getType();
 
-    void trigger(ServerWorld world, @Nullable PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity);
+    void trigger(ServerLevel world, @Nullable Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity);
 }

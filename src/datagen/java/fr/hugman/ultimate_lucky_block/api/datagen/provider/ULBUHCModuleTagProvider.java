@@ -5,23 +5,22 @@ import fr.hugman.ultimate_lucky_block.api.registry.ULBUHCModuleTags;
 import fr.hugman.uhc.api.module.UHCModule;
 import fr.hugman.uhc.api.registry.UHCModuleTags;
 import fr.hugman.uhc.api.registry.UHCRegistryKeys;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
-import net.minecraft.registry.RegistryWrapper;
-
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
+import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagsProvider;
+import net.minecraft.core.HolderLookup;
 import java.util.concurrent.CompletableFuture;
 
 /**
  * @author Hugman
  * @since 1.0.0
  */
-public class ULBUHCModuleTagProvider extends FabricTagProvider<UHCModule> {
-    public ULBUHCModuleTagProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture) {
+public class ULBUHCModuleTagProvider extends FabricTagsProvider<UHCModule> {
+    public ULBUHCModuleTagProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> completableFuture) {
         super(output, UHCRegistryKeys.UHC_MODULE, completableFuture);
     }
 
     @Override
-    protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
+    protected void addTags(HolderLookup.Provider wrapperLookup) {
         builder(ULBUHCModuleTags.UHCRUN)
                 .forceAddTag(UHCModuleTags.UHCRUN)
                 .add(ULBUHCModules.LUCKY_BLOCKS);

@@ -4,47 +4,46 @@ import eu.pb4.polymer.core.api.block.PolymerBlock;
 import eu.pb4.polymer.core.api.item.PolymerBlockItem;
 import fr.hugman.ultimate_lucky_block.api.lucky_event.LuckyEvent;
 import fr.hugman.ultimate_lucky_block.api.lucky_event.LuckyPoolEvents;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.ContainerComponent;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-
 import java.util.function.Function;
+import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.component.ItemContainerContents;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 
 /**
  * @author Hugman
  * @since 1.0.0
  */
 public class ULBBlocks {
-    public static final LuckyBlock LUCKY_BLOCK = luckyBlock(ULBBlockKeys.LUCKY_BLOCK, LuckyPoolEvents.NORMAL, AbstractBlock.Settings.copy(Blocks.YELLOW_WOOL));
+    public static final LuckyBlock LUCKY_BLOCK = luckyBlock(ULBBlockKeys.LUCKY_BLOCK, LuckyPoolEvents.NORMAL, BlockBehaviour.Properties.ofFullCopy(Blocks.YELLOW_WOOL));
 
-    public static final LuckyBlock SUPER_LUCKY_BLOCK = luckyBlock(ULBBlockKeys.SUPER_LUCKY_BLOCK, LuckyPoolEvents.LUCKY, AbstractBlock.Settings.copy(Blocks.LIME_WOOL));
-    public static final LuckyBlock VERY_LUCKY_BLOCK = luckyBlock(ULBBlockKeys.VERY_LUCKY_BLOCK, LuckyPoolEvents.VERY_LUCKY, AbstractBlock.Settings.copy(Blocks.LIGHT_BLUE_WOOL));
-    public static final LuckyBlock UNLUCKY_BLOCK = luckyBlock(ULBBlockKeys.UNLUCKY_BLOCK, LuckyPoolEvents.UNLUCKY, AbstractBlock.Settings.copy(Blocks.RED_WOOL));
-    public static final LuckyBlock VERY_UNLUCKY_BLOCK = luckyBlock(ULBBlockKeys.VERY_UNLUCKY_BLOCK, LuckyPoolEvents.VERY_UNLUCKY, AbstractBlock.Settings.copy(Blocks.PURPLE_WOOL));
+    public static final LuckyBlock SUPER_LUCKY_BLOCK = luckyBlock(ULBBlockKeys.SUPER_LUCKY_BLOCK, LuckyPoolEvents.LUCKY, BlockBehaviour.Properties.ofFullCopy(Blocks.LIME_WOOL));
+    public static final LuckyBlock VERY_LUCKY_BLOCK = luckyBlock(ULBBlockKeys.VERY_LUCKY_BLOCK, LuckyPoolEvents.VERY_LUCKY, BlockBehaviour.Properties.ofFullCopy(Blocks.LIGHT_BLUE_WOOL));
+    public static final LuckyBlock UNLUCKY_BLOCK = luckyBlock(ULBBlockKeys.UNLUCKY_BLOCK, LuckyPoolEvents.UNLUCKY, BlockBehaviour.Properties.ofFullCopy(Blocks.RED_WOOL));
+    public static final LuckyBlock VERY_UNLUCKY_BLOCK = luckyBlock(ULBBlockKeys.VERY_UNLUCKY_BLOCK, LuckyPoolEvents.VERY_UNLUCKY, BlockBehaviour.Properties.ofFullCopy(Blocks.PURPLE_WOOL));
 
-    public static final LuckyBlock DOUBLE_LUCKY_BLOCK = luckyBlock(ULBBlockKeys.DOUBLE_LUCKY_BLOCK, LuckyPoolEvents.DOUBLE, AbstractBlock.Settings.copy(LUCKY_BLOCK));
-    public static final LuckyBlock TRIPLE_LUCKY_BLOCK = luckyBlock(ULBBlockKeys.TRIPLE_LUCKY_BLOCK, LuckyPoolEvents.TRIPLE, AbstractBlock.Settings.copy(LUCKY_BLOCK));
+    public static final LuckyBlock DOUBLE_LUCKY_BLOCK = luckyBlock(ULBBlockKeys.DOUBLE_LUCKY_BLOCK, LuckyPoolEvents.DOUBLE, BlockBehaviour.Properties.ofFullCopy(LUCKY_BLOCK));
+    public static final LuckyBlock TRIPLE_LUCKY_BLOCK = luckyBlock(ULBBlockKeys.TRIPLE_LUCKY_BLOCK, LuckyPoolEvents.TRIPLE, BlockBehaviour.Properties.ofFullCopy(LUCKY_BLOCK));
 
-    private static <B extends Block & PolymerBlock> B noItem(RegistryKey<Block> key, Function<AbstractBlock.Settings, B> factory, AbstractBlock.Settings blockSettings) {
-        B block = factory.apply(blockSettings.registryKey(key));
-        return Registry.register(Registries.BLOCK, key, block);
+    private static <B extends Block & PolymerBlock> B noItem(ResourceKey<Block> key, Function<BlockBehaviour.Properties, B> factory, BlockBehaviour.Properties blockSettings) {
+        B block = factory.apply(blockSettings.setId(key));
+        return Registry.register(BuiltInRegistries.BLOCK, key, block);
     }
 
-    private static <B extends Block & PolymerBlock> B of(RegistryKey<Block> key, Function<AbstractBlock.Settings, B> factory, AbstractBlock.Settings blockSettings, Item.Settings itemSettings) {
+    private static <B extends Block & PolymerBlock> B of(ResourceKey<Block> key, Function<BlockBehaviour.Properties, B> factory, BlockBehaviour.Properties blockSettings, Item.Properties itemSettings) {
         B block = noItem(key, factory, blockSettings);
-        var itemRegistryKey = RegistryKey.of(RegistryKeys.ITEM, key.getValue());
-        Registry.register(Registries.ITEM, itemRegistryKey, new PolymerBlockItem(block, itemSettings.registryKey(itemRegistryKey).useBlockPrefixedTranslationKey()));
+        var itemRegistryKey = ResourceKey.create(Registries.ITEM, key.identifier());
+        Registry.register(BuiltInRegistries.ITEM, itemRegistryKey, new PolymerBlockItem(block, itemSettings.setId(itemRegistryKey).useBlockDescriptionPrefix()));
         return block;
     }
 
-    private static LuckyBlock luckyBlock(RegistryKey<Block> key, RegistryKey<LuckyEvent> event, AbstractBlock.Settings settings) {
-        return of(key, s -> new LuckyBlock(s, event, key), settings, new Item.Settings().component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT));
+    private static LuckyBlock luckyBlock(ResourceKey<Block> key, ResourceKey<LuckyEvent> event, BlockBehaviour.Properties settings) {
+        return of(key, s -> new LuckyBlock(s, event, key), settings, new Item.Properties().component(DataComponents.CONTAINER, ItemContainerContents.EMPTY));
     }
 }

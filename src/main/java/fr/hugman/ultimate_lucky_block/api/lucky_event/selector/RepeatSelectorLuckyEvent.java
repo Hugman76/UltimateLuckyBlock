@@ -7,13 +7,13 @@ import fr.hugman.ultimate_lucky_block.api.lucky_event.LuckyEvent;
 import fr.hugman.ultimate_lucky_block.api.lucky_event.LuckyEventType;
 import fr.hugman.ultimate_lucky_block.api.lucky_event.LuckyEventTypes;
 import fr.hugman.ultimate_lucky_block.api.registry.RegistryEntryListBuilder;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.math.intprovider.ConstantIntProvider;
-import net.minecraft.util.math.intprovider.IntProvider;
-import net.minecraft.util.math.intprovider.UniformIntProvider;
-import net.minecraft.util.math.random.Random;
-
 import java.util.List;
+import net.minecraft.core.Holder;
+import net.minecraft.util.RandomSource;
+import net.minecraft.util.valueproviders.ConstantInt;
+import net.minecraft.util.valueproviders.IntProvider;
+import net.minecraft.util.valueproviders.IntProviders;
+import net.minecraft.util.valueproviders.UniformInt;
 
 /**
  * Triggers a lucky event a specified number of times.
@@ -23,25 +23,25 @@ import java.util.List;
  */
 public record RepeatSelectorLuckyEvent(
         IntProvider count,
-        RegistryEntry<LuckyEvent> event
+        Holder<LuckyEvent> event
 ) implements SelectorLuckyEvent {
     public static final MapCodec<RepeatSelectorLuckyEvent> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            IntProvider.POSITIVE_CODEC.fieldOf("count").forGetter(RepeatSelectorLuckyEvent::count),
+            IntProviders.POSITIVE_CODEC.fieldOf("count").forGetter(RepeatSelectorLuckyEvent::count),
             LuckyEvent.ENTRY_CODEC.fieldOf("event").forGetter(RepeatSelectorLuckyEvent::event)
     ).apply(instance, RepeatSelectorLuckyEvent::new));
 
-    public RepeatSelectorLuckyEvent(int count, RegistryEntry<LuckyEvent> event) {
-        this(ConstantIntProvider.create(count), event);
+    public RepeatSelectorLuckyEvent(int count, Holder<LuckyEvent> event) {
+        this(ConstantInt.of(count), event);
     }
 
     public RepeatSelectorLuckyEvent(int count, LuckyEvent event) {
-        this(count, RegistryEntry.of(event));
+        this(count, Holder.direct(event));
     }
 
     @Override
-    public List<RegistryEntry<LuckyEvent>> get(Random random, float luck) {
-        var events = ImmutableList.<RegistryEntry<LuckyEvent>>builder();
-        for (int i = 0, n = count.get(random); i < n; i++) {
+    public List<Holder<LuckyEvent>> get(RandomSource random, float luck) {
+        var events = ImmutableList.<Holder<LuckyEvent>>builder();
+        for (int i = 0, n = count.sample(random); i < n; i++) {
             events.add(event);
         }
         return events.build();
@@ -57,7 +57,7 @@ public record RepeatSelectorLuckyEvent(
     }
 
     public static class Builder extends RegistryEntryListBuilder<Builder, LuckyEvent> {
-        private IntProvider count = ConstantIntProvider.create(1);
+        private IntProvider count = ConstantInt.of(1);
 
         private Builder() {}
 
@@ -72,11 +72,11 @@ public record RepeatSelectorLuckyEvent(
         }
 
         public Builder count(int count) {
-            return count(ConstantIntProvider.create(count));
+            return count(ConstantInt.of(count));
         }
 
         public Builder count(int min, int max) {
-            return count(UniformIntProvider.create(min, max));
+            return count(UniformInt.of(min, max));
         }
 
         public RepeatSelectorLuckyEvent build() {
@@ -84,7 +84,7 @@ public record RepeatSelectorLuckyEvent(
             if (list.size() == 1) {
                 return new RepeatSelectorLuckyEvent(count, list.getFirst());
             }
-            return new RepeatSelectorLuckyEvent(count, RegistryEntry.of(
+            return new RepeatSelectorLuckyEvent(count, Holder.direct(
                     OneOfSelectorLuckyEvent.builder().add(list).build()
             ));
         }

@@ -3,21 +3,27 @@ package fr.hugman.ultimate_lucky_block.api.datagen.provider;
 import fr.hugman.ultimate_lucky_block.api.block.ULBBlocks;
 import fr.hugman.ultimate_lucky_block.impl.UltimateLuckyBlock;
 import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.minecraft.block.Block;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.minecraft.client.data.*;
+import net.minecraft.client.data.models.BlockModelGenerators;
+import net.minecraft.client.data.models.ItemModelGenerators;
+import net.minecraft.client.data.models.model.ItemModelUtils;
+import net.minecraft.client.data.models.model.ModelTemplates;
+import net.minecraft.client.data.models.model.TextureMapping;
+import net.minecraft.client.resources.model.sprite.Material;
+import net.minecraft.world.level.block.Block;
 
 /**
  * @author Hugman
  * @since 1.0.0
  */
 public class ULBModelProvider extends FabricModelProvider {
-    public ULBModelProvider(FabricDataOutput output) {
+    public ULBModelProvider(FabricPackOutput output) {
         super(output);
     }
 
     @Override
-    public void generateBlockStateModels(BlockStateModelGenerator gen) {
+    public void generateBlockStateModels(BlockModelGenerators gen) {
         registerLuckyBlock(gen, ULBBlocks.LUCKY_BLOCK, "yellow");
 
         registerLuckyBlock(gen, ULBBlocks.SUPER_LUCKY_BLOCK, "green");
@@ -29,22 +35,22 @@ public class ULBModelProvider extends FabricModelProvider {
         registerLuckyBlock(gen, ULBBlocks.TRIPLE_LUCKY_BLOCK, "triple_yellow", "yellow");
     }
 
-    private void registerLuckyBlock(BlockStateModelGenerator gen, Block block, String suffix) {
+    private void registerLuckyBlock(BlockModelGenerators gen, Block block, String suffix) {
         registerLuckyBlock(gen, block, suffix, suffix);
     }
 
-    private void registerLuckyBlock(BlockStateModelGenerator gen, Block block, String sideSuffix, String endSuffix) {
-        TextureMap textureMap = TextureMap.sideEnd(
-                UltimateLuckyBlock.id("block/lucky_block/side_" + sideSuffix),
-                UltimateLuckyBlock.id("block/lucky_block/end_" + endSuffix)
+    private void registerLuckyBlock(BlockModelGenerators gen, Block block, String sideSuffix, String endSuffix) {
+        TextureMapping textureMap = TextureMapping.column(
+                new Material(UltimateLuckyBlock.id("block/lucky_block/side_" + sideSuffix)),
+                new Material(UltimateLuckyBlock.id("block/lucky_block/end_" + endSuffix))
         );
-        var model = Models.CUBE_COLUMN.upload(block, textureMap, gen.modelCollector);
-        BlockStateModelGenerator.createWeightedVariant(model);
-        gen.itemModelOutput.accept(block.asItem(), ItemModels.basic(model));
+        var model = ModelTemplates.CUBE_COLUMN.create(block, textureMap, gen.modelOutput);
+        BlockModelGenerators.plainVariant(model);
+        gen.itemModelOutput.accept(block.asItem(), ItemModelUtils.plainModel(model));
     }
 
     @Override
-    public void generateItemModels(ItemModelGenerator gen) {
+    public void generateItemModels(ItemModelGenerators gen) {
     }
 }
 
