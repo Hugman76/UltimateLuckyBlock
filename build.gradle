@@ -29,7 +29,7 @@ dependencies {
 
     implementation "xyz.nucleoid:plasmid:${project.plasmid_version}"
 
-    implementation "eu.pb4:polymer-autohost:${project.polymer_version}"
+    implementation "eu.pb4:polymer-autohost:${project.polymer_autohost_version}"
 
     implementation "fr.hugman:uhc:${project.uhc_version}"
 }

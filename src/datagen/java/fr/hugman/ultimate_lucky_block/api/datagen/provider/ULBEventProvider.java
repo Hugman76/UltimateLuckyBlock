@@ -14,6 +14,7 @@ import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
@@ -60,7 +61,7 @@ public class ULBEventProvider extends FabricDynamicRegistryProvider {
         ));
         registerable.register(LuckyEvents.SET_ORE_BLOCK, new SetBlockLuckyEvent(
                 Blocks.COAL_BLOCK,
-                Blocks.COPPER_BLOCK,
+                Blocks.COPPER_BLOCK.weathering().unaffected(),
                 Blocks.IRON_BLOCK,
                 Blocks.GOLD_BLOCK,
                 Blocks.REDSTONE_BLOCK,
@@ -72,67 +73,67 @@ public class ULBEventProvider extends FabricDynamicRegistryProvider {
         // Pillars
         registerable.register(LuckyEvents.SET_BEDROCK_WORLD_PILLAR, new PillarLuckyEvent(Blocks.BEDROCK, true, true));
         registerable.register(LuckyEvents.SET_WOOL_PILLAR, new PillarLuckyEvent(new WeightedStateProvider(new WeightedList.Builder<BlockState>()
-                .add(Blocks.WHITE_WOOL.defaultBlockState())
-                .add(Blocks.ORANGE_WOOL.defaultBlockState())
-                .add(Blocks.MAGENTA_WOOL.defaultBlockState())
-                .add(Blocks.LIGHT_BLUE_WOOL.defaultBlockState())
-                .add(Blocks.YELLOW_WOOL.defaultBlockState())
-                .add(Blocks.LIME_WOOL.defaultBlockState())
-                .add(Blocks.PINK_WOOL.defaultBlockState())
-                .add(Blocks.GRAY_WOOL.defaultBlockState())
-                .add(Blocks.LIGHT_GRAY_WOOL.defaultBlockState())
-                .add(Blocks.CYAN_WOOL.defaultBlockState())
-                .add(Blocks.PURPLE_WOOL.defaultBlockState())
-                .add(Blocks.BLUE_WOOL.defaultBlockState())
-                .add(Blocks.BROWN_WOOL.defaultBlockState())
-                .add(Blocks.GREEN_WOOL.defaultBlockState())
-                .add(Blocks.RED_WOOL.defaultBlockState())
-                .add(Blocks.BLACK_WOOL.defaultBlockState())
+                .add(Blocks.WOOL.white().defaultBlockState())
+                .add(Blocks.WOOL.orange().defaultBlockState())
+                .add(Blocks.WOOL.magenta().defaultBlockState())
+                .add(Blocks.WOOL.lightBlue().defaultBlockState())
+                .add(Blocks.WOOL.yellow().defaultBlockState())
+                .add(Blocks.WOOL.lime().defaultBlockState())
+                .add(Blocks.WOOL.pink().defaultBlockState())
+                .add(Blocks.WOOL.gray().defaultBlockState())
+                .add(Blocks.WOOL.lightGray().defaultBlockState())
+                .add(Blocks.WOOL.cyan().defaultBlockState())
+                .add(Blocks.WOOL.purple().defaultBlockState())
+                .add(Blocks.WOOL.blue().defaultBlockState())
+                .add(Blocks.WOOL.brown().defaultBlockState())
+                .add(Blocks.WOOL.green().defaultBlockState())
+                .add(Blocks.WOOL.red().defaultBlockState())
+                .add(Blocks.WOOL.black().defaultBlockState())
         )));
 
         // Summon Entities
-        registerable.register(LuckyEvents.SUMMON_TAMED_CAT, SummonEntityLuckyEvent.builder(EntityType.CAT).tamed().build());
-        registerable.register(LuckyEvents.SUMMON_TAMED_WOLF, SummonEntityLuckyEvent.builder(EntityType.WOLF).tamed().build());
-        registerable.register(LuckyEvents.SUMMON_RAINBOW_SHEEP, SummonEntityLuckyEvent.builder(EntityType.SHEEP).name("jeb_").build());
+        registerable.register(LuckyEvents.SUMMON_TAMED_CAT, SummonEntityLuckyEvent.builder(EntityTypes.CAT).tamed().build());
+        registerable.register(LuckyEvents.SUMMON_TAMED_WOLF, SummonEntityLuckyEvent.builder(EntityTypes.WOLF).tamed().build());
+        registerable.register(LuckyEvents.SUMMON_RAINBOW_SHEEP, SummonEntityLuckyEvent.builder(EntityTypes.SHEEP).name("jeb_").build());
         registerable.register(LuckyEvents.SUMMON_HAPPY_GHAST, OneOfSelectorLuckyEvent.builder()
-                .add(summonHappyGhast(Items.WHITE_HARNESS))
-                .add(summonHappyGhast(Items.ORANGE_HARNESS))
-                .add(summonHappyGhast(Items.MAGENTA_HARNESS))
-                .add(summonHappyGhast(Items.LIGHT_BLUE_HARNESS))
-                .add(summonHappyGhast(Items.YELLOW_HARNESS))
-                .add(summonHappyGhast(Items.LIME_HARNESS))
-                .add(summonHappyGhast(Items.PINK_HARNESS))
-                .add(summonHappyGhast(Items.GRAY_HARNESS))
-                .add(summonHappyGhast(Items.LIGHT_GRAY_HARNESS))
-                .add(summonHappyGhast(Items.CYAN_HARNESS))
-                .add(summonHappyGhast(Items.PURPLE_HARNESS))
-                .add(summonHappyGhast(Items.BLUE_HARNESS))
-                .add(summonHappyGhast(Items.BROWN_HARNESS))
-                .add(summonHappyGhast(Items.GREEN_HARNESS))
-                .add(summonHappyGhast(Items.RED_HARNESS))
-                .add(summonHappyGhast(Items.BLACK_HARNESS))
+                .add(summonHappyGhast(Items.HARNESS.white()))
+                .add(summonHappyGhast(Items.HARNESS.orange()))
+                .add(summonHappyGhast(Items.HARNESS.magenta()))
+                .add(summonHappyGhast(Items.HARNESS.lightBlue()))
+                .add(summonHappyGhast(Items.HARNESS.yellow()))
+                .add(summonHappyGhast(Items.HARNESS.lime()))
+                .add(summonHappyGhast(Items.HARNESS.pink()))
+                .add(summonHappyGhast(Items.HARNESS.gray()))
+                .add(summonHappyGhast(Items.HARNESS.lightGray()))
+                .add(summonHappyGhast(Items.HARNESS.cyan()))
+                .add(summonHappyGhast(Items.HARNESS.purple()))
+                .add(summonHappyGhast(Items.HARNESS.blue()))
+                .add(summonHappyGhast(Items.HARNESS.brown()))
+                .add(summonHappyGhast(Items.HARNESS.green()))
+                .add(summonHappyGhast(Items.HARNESS.red()))
+                .add(summonHappyGhast(Items.HARNESS.black()))
                 .build());
 
-        registerable.register(LuckyEvents.SUMMON_ANGRY_WOLF, SummonEntityLuckyEvent.builder(EntityType.WOLF).shouldTarget().build());
-        registerable.register(LuckyEvents.SUMMON_CREEPER, SummonEntityLuckyEvent.builder(EntityType.CREEPER).shouldTarget().build());
-        registerable.register(LuckyEvents.SUMMON_GHAST, new SummonEntityLuckyEvent(EntityType.GHAST));
-        registerable.register(LuckyEvents.SUMMON_WARDEN, new SummonEntityLuckyEvent(EntityType.WARDEN));
-        registerable.register(LuckyEvents.SUMMON_WITHER, new SummonEntityLuckyEvent(EntityType.WITHER));
+        registerable.register(LuckyEvents.SUMMON_ANGRY_WOLF, SummonEntityLuckyEvent.builder(EntityTypes.WOLF).shouldTarget().build());
+        registerable.register(LuckyEvents.SUMMON_CREEPER, SummonEntityLuckyEvent.builder(EntityTypes.CREEPER).shouldTarget().build());
+        registerable.register(LuckyEvents.SUMMON_GHAST, new SummonEntityLuckyEvent(EntityTypes.GHAST));
+        registerable.register(LuckyEvents.SUMMON_WARDEN, new SummonEntityLuckyEvent(EntityTypes.WARDEN));
+        registerable.register(LuckyEvents.SUMMON_WITHER, new SummonEntityLuckyEvent(EntityTypes.WITHER));
         registerable.register(LuckyEvents.SUMMON_WITCH, AllOfSelectorLuckyEvent.builder()
-                .add(SummonEntityLuckyEvent.builder(EntityType.WITCH).shouldTarget().build())
+                .add(SummonEntityLuckyEvent.builder(EntityTypes.WITCH).shouldTarget().build())
                 .add(RepeatSelectorLuckyEvent.builder()
                         .count(3, 6)
-                        .add(new SummonEntityLuckyEvent(EntityType.BAT))
+                        .add(new SummonEntityLuckyEvent(EntityTypes.BAT))
                         .build())
                 .build());
-        registerable.register(LuckyEvents.SUMMON_GIANT, new SummonEntityLuckyEvent(EntityType.GIANT));
+        registerable.register(LuckyEvents.SUMMON_GIANT, new SummonEntityLuckyEvent(EntityTypes.GIANT));
         registerable.register(LuckyEvents.SUMMON_CHARGED_CREEPER, AllOfSelectorLuckyEvent.builder()
-                .add(SummonEntityLuckyEvent.builder(EntityType.CREEPER).shouldTarget().build())
-                .add(new SummonEntityLuckyEvent(EntityType.LIGHTNING_BOLT))
+                .add(SummonEntityLuckyEvent.builder(EntityTypes.CREEPER).shouldTarget().build())
+                .add(new SummonEntityLuckyEvent(EntityTypes.LIGHTNING_BOLT))
                 .build());
         registerable.register(LuckyEvents.SUMMON_SLIME, OneOfSelectorLuckyEvent.builder()
-                .add(RepeatSelectorLuckyEvent.builder().count(1, 3).add(new SummonEntityLuckyEvent(EntityType.SLIME)).build())
-                .add(RepeatSelectorLuckyEvent.builder().count(1, 2).add(new SummonEntityLuckyEvent(EntityType.MAGMA_CUBE)).build())
+                .add(RepeatSelectorLuckyEvent.builder().count(1, 3).add(new SummonEntityLuckyEvent(EntityTypes.SLIME)).build())
+                .add(RepeatSelectorLuckyEvent.builder().count(1, 2).add(new SummonEntityLuckyEvent(EntityTypes.MAGMA_CUBE)).build())
                 .build());
 
         // Loots
@@ -156,7 +157,7 @@ public class ULBEventProvider extends FabricDynamicRegistryProvider {
         itemElement.putString("id", BuiltInRegistries.ITEM.getKey(harness).toString());
         equipment.put("body", itemElement);
         compound.put("equipment", equipment);
-        return SummonEntityLuckyEvent.builder(EntityType.HAPPY_GHAST)
+        return SummonEntityLuckyEvent.builder(EntityTypes.HAPPY_GHAST)
                 .data(compound)
                 .build();
     }

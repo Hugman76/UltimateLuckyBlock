@@ -21,12 +21,12 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
  * @since 1.0.0
  */
 public class ULBBlocks {
-    public static final LuckyBlock LUCKY_BLOCK = luckyBlock(ULBBlockKeys.LUCKY_BLOCK, LuckyPoolEvents.NORMAL, BlockBehaviour.Properties.ofFullCopy(Blocks.YELLOW_WOOL));
+    public static final LuckyBlock LUCKY_BLOCK = luckyBlock(ULBBlockKeys.LUCKY_BLOCK, LuckyPoolEvents.NORMAL, BlockBehaviour.Properties.ofFullCopy(Blocks.WOOL.yellow()));
 
-    public static final LuckyBlock SUPER_LUCKY_BLOCK = luckyBlock(ULBBlockKeys.SUPER_LUCKY_BLOCK, LuckyPoolEvents.LUCKY, BlockBehaviour.Properties.ofFullCopy(Blocks.LIME_WOOL));
-    public static final LuckyBlock VERY_LUCKY_BLOCK = luckyBlock(ULBBlockKeys.VERY_LUCKY_BLOCK, LuckyPoolEvents.VERY_LUCKY, BlockBehaviour.Properties.ofFullCopy(Blocks.LIGHT_BLUE_WOOL));
-    public static final LuckyBlock UNLUCKY_BLOCK = luckyBlock(ULBBlockKeys.UNLUCKY_BLOCK, LuckyPoolEvents.UNLUCKY, BlockBehaviour.Properties.ofFullCopy(Blocks.RED_WOOL));
-    public static final LuckyBlock VERY_UNLUCKY_BLOCK = luckyBlock(ULBBlockKeys.VERY_UNLUCKY_BLOCK, LuckyPoolEvents.VERY_UNLUCKY, BlockBehaviour.Properties.ofFullCopy(Blocks.PURPLE_WOOL));
+    public static final LuckyBlock SUPER_LUCKY_BLOCK = luckyBlock(ULBBlockKeys.SUPER_LUCKY_BLOCK, LuckyPoolEvents.LUCKY, BlockBehaviour.Properties.ofFullCopy(Blocks.WOOL.lime()));
+    public static final LuckyBlock VERY_LUCKY_BLOCK = luckyBlock(ULBBlockKeys.VERY_LUCKY_BLOCK, LuckyPoolEvents.VERY_LUCKY, BlockBehaviour.Properties.ofFullCopy(Blocks.WOOL.lightBlue()));
+    public static final LuckyBlock UNLUCKY_BLOCK = luckyBlock(ULBBlockKeys.UNLUCKY_BLOCK, LuckyPoolEvents.UNLUCKY, BlockBehaviour.Properties.ofFullCopy(Blocks.WOOL.red()));
+    public static final LuckyBlock VERY_UNLUCKY_BLOCK = luckyBlock(ULBBlockKeys.VERY_UNLUCKY_BLOCK, LuckyPoolEvents.VERY_UNLUCKY, BlockBehaviour.Properties.ofFullCopy(Blocks.WOOL.purple()));
 
     public static final LuckyBlock DOUBLE_LUCKY_BLOCK = luckyBlock(ULBBlockKeys.DOUBLE_LUCKY_BLOCK, LuckyPoolEvents.DOUBLE, BlockBehaviour.Properties.ofFullCopy(LUCKY_BLOCK));
     public static final LuckyBlock TRIPLE_LUCKY_BLOCK = luckyBlock(ULBBlockKeys.TRIPLE_LUCKY_BLOCK, LuckyPoolEvents.TRIPLE, BlockBehaviour.Properties.ofFullCopy(LUCKY_BLOCK));

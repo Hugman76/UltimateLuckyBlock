@@ -1,5 +1,7 @@
 package fr.hugman.ultimate_lucky_block.api.datagen.provider;
 
+import fr.hugman.uhc.api.tags.UHCBiomeTags;
+import fr.hugman.uhc.api.world.level.levelgen.UHCNoiseSettings;
 import fr.hugman.ultimate_lucky_block.api.config.ULBUHCConfigs;
 import fr.hugman.ultimate_lucky_block.api.module.ULBUHCModules;
 import fr.hugman.ultimate_lucky_block.api.registry.ULBUHCModuleTags;
@@ -13,8 +15,15 @@ import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricDynamicRegistryProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstrapContext;
+import net.minecraft.world.level.biome.MultiNoiseBiomeSource;
+import net.minecraft.world.level.biome.MultiNoiseBiomeSourceParameterLists;
+import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
 import net.minecraft.world.level.dimension.LevelStem;
+import net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator;
+import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
+
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -42,19 +51,35 @@ public class ULBUHCConfigProvider extends FabricDynamicRegistryProvider {
 
     public static void register(BootstrapContext<UHCConfig> registerable) {
         var modules = registerable.lookup(UHCRegistryKeys.UHC_MODULE);
+        var dimensionsTypes = registerable.lookup(Registries.DIMENSION_TYPE);
+        var noiseSettings = registerable.lookup(Registries.NOISE_SETTINGS);
+        var biomes = registerable.lookup(Registries.BIOME);
+
+        var multiNoiseBiomeSourceParameterList = registerable.lookup(Registries.MULTI_NOISE_BIOME_SOURCE_PARAMETER_LIST);
+
+        var overworldChunkGenerator = new NoiseBasedChunkGenerator(
+                MultiNoiseBiomeSource.createFromPreset(multiNoiseBiomeSourceParameterList.getOrThrow(MultiNoiseBiomeSourceParameterLists.OVERWORLD)),
+                noiseSettings.getOrThrow(NoiseGeneratorSettings.OVERWORLD) //TODO: replace with Uhc oceanless
+        );
 
         registerable.register(ULBUHCConfigs.LUCKY_UHC, new UHCConfig(UHCMapConfig.of(
-                LevelStem.OVERWORLD,
+                dimensionsTypes.getOrThrow(BuiltinDimensionTypes.OVERWORLD),
+                overworldChunkGenerator,
+                biomes.getOrThrow(UHCBiomeTags.OCEANLESS_BLACKLIST),
                 new DoubleRange(400, 10000),
                 0.5D
         ), UHCTimersConfig.DEFAULT, HolderSet.direct(modules.getOrThrow(ULBUHCModules.LUCKY_BLOCKS))));
         registerable.register(ULBUHCConfigs.LUCKY_UHCRUN, new UHCConfig(UHCMapConfig.of(
-                LevelStem.OVERWORLD,
+                dimensionsTypes.getOrThrow(BuiltinDimensionTypes.OVERWORLD),
+                overworldChunkGenerator,
+                biomes.getOrThrow(UHCBiomeTags.OCEANLESS_BLACKLIST),
                 new DoubleRange(200, 8000),
                 0.6D
         ), UHCTimersConfig.DEFAULT.withWarmup(1200), modules.getOrThrow(ULBUHCModuleTags.UHCRUN)));
         registerable.register(ULBUHCConfigs.LUCKY_DOUBLERUNNER, new UHCConfig(UHCMapConfig.of(
-                LevelStem.OVERWORLD,
+                dimensionsTypes.getOrThrow(BuiltinDimensionTypes.OVERWORLD),
+                overworldChunkGenerator,
+                biomes.getOrThrow(UHCBiomeTags.OCEANLESS_BLACKLIST),
                 new DoubleRange(200, 8000),
                 0.75D
         ), UHCTimersConfig.DEFAULT.withWarmup(600), modules.getOrThrow(ULBUHCModuleTags.DOUBLERUNNER)));
