@@ -14,7 +14,6 @@ import net.minecraft.world.level.storage.loot.functions.EnchantRandomlyFunction;
 import net.minecraft.world.level.storage.loot.functions.SetNameFunction;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
-import xyz.nucleoid.plasmid.api.util.ColoredItems;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
@@ -48,7 +47,7 @@ public class ULBLootTableProvider extends SimpleFabricLootTableSubProvider {
         ));
         var allDyes = LootTable.lootTable();
         for (DyeColor color : DyeColor.values()) {
-            allDyes.pool(LootPool.lootPool().add(LootItem.lootTableItem(ColoredItems.dye(color))).build());
+            allDyes.pool(LootPool.lootPool().add(LootItem.lootTableItem(Items.DYE.pick(color))).build());
         }
         consumer.accept(ALL_DYES, allDyes);
         consumer.accept(END_GAME_ITEM, LootTable.lootTable().pool(LootPool.lootPool()
