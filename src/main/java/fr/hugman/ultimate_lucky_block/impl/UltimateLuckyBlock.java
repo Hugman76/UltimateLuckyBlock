@@ -2,7 +2,6 @@ package fr.hugman.ultimate_lucky_block.impl;
 
 import com.google.common.reflect.Reflection;
 import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
-import fr.hugman.uhc.api.world.level.levelgen.UHCNoiseSettings;
 import fr.hugman.ultimate_lucky_block.api.block.LuckyBlockInterface;
 import fr.hugman.ultimate_lucky_block.api.block.ULBBlocks;
 import fr.hugman.ultimate_lucky_block.api.item.ULBCreativeTabs;
