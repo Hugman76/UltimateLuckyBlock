@@ -15,6 +15,10 @@ public class ULBDataGenerator implements DataGeneratorEntrypoint {
         FabricDataGenerator.Pack pack = fabricDataGenerator.createPack();
 
         pack.addProvider(ULBModelProvider::new);
+        pack.addProvider(ULBAtlasProvider::new);
+
+        // - Language
+        pack.addProvider(ULBLangProvider::new);
 
         // - Lucky Block
         pack.addProvider(ULBEventProvider::new);

@@ -12,14 +12,20 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.DoubleTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.stateproviders.WeightedStateProvider;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -27,6 +33,19 @@ import java.util.concurrent.CompletableFuture;
  * @since 1.0.0
  */
 public class ULBEventProvider extends FabricDynamicRegistryProvider {
+    private static final Map<ResourceKey<Enchantment>, Integer> BOB_ARMOR_ENCHANTMENTS = Map.of(
+            Enchantments.PROTECTION, 4,
+            Enchantments.UNBREAKING, 3
+    );
+    private static final Map<ResourceKey<Enchantment>, Integer> BOB_SWORD_ENCHANTMENTS = Map.of(
+            Enchantments.SHARPNESS, 5,
+            Enchantments.UNBREAKING, 3,
+            Enchantments.FIRE_ASPECT, 2
+    );
+    private static final Map<ResourceKey<Enchantment>, Integer> BOB_SHIELD_ENCHANTMENTS = Map.of(
+            Enchantments.UNBREAKING, 3
+    );
+
     public ULBEventProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
         super(output, registriesFuture);
     }
@@ -114,6 +133,10 @@ public class ULBEventProvider extends FabricDynamicRegistryProvider {
                 .add(summonHappyGhast(Items.HARNESS.black()))
                 .build());
 
+        registerable.register(LuckyEvents.SUMMON_BOB, SummonEntityLuckyEvent.builder(EntityTypes.ZOMBIE)
+                .data(bobEquipment())
+                .name("Bob")
+                .build());
         registerable.register(LuckyEvents.SUMMON_ANGRY_WOLF, SummonEntityLuckyEvent.builder(EntityTypes.WOLF).shouldTarget().build());
         registerable.register(LuckyEvents.SUMMON_CREEPER, SummonEntityLuckyEvent.builder(EntityTypes.CREEPER).shouldTarget().build());
         registerable.register(LuckyEvents.SUMMON_GHAST, new SummonEntityLuckyEvent(EntityTypes.GHAST));
@@ -136,6 +159,15 @@ public class ULBEventProvider extends FabricDynamicRegistryProvider {
                 .add(RepeatSelectorLuckyEvent.builder().count(1, 2).add(new SummonEntityLuckyEvent(EntityTypes.MAGMA_CUBE)).build())
                 .build());
 
+        var tnt = motion(0.0D, 0.5D, 0.0D);
+        tnt.putInt("fuse", 20);
+        registerable.register(LuckyEvents.SUMMON_ONE_TNT, SummonEntityLuckyEvent.builder(EntityTypes.TNT)
+                .data(tnt)
+                .build());
+        registerable.register(LuckyEvents.SUMMON_ONE_WIND_CHARGE, SummonEntityLuckyEvent.builder(EntityTypes.WIND_CHARGE)
+                .data(motion(0.0D, -0.5D, 0.0D))
+                .build());
+
         // Loots
         registerable.register(LuckyEvents.LOOT_LUCKY_SWORD, new LootLuckyEvent(ULBLootTables.LUCKY_SWORD));
         registerable.register(LuckyEvents.LOOT_LUCKY_BOW, new LootLuckyEvent(ULBLootTables.LUCKY_BOW));
@@ -148,6 +180,40 @@ public class ULBEventProvider extends FabricDynamicRegistryProvider {
         registerable.register(LuckyEvents.LOOT_EGGS, new LootLuckyEvent(ULBLootTables.EGGS));
         registerable.register(LuckyEvents.LOOT_POTATOES, new LootLuckyEvent(ULBLootTables.POTATOES));
         registerable.register(LuckyEvents.LOOT_PUMPKINS, new LootLuckyEvent(ULBLootTables.PUMPKINS));
+    }
+
+    private static CompoundTag motion(double x, double y, double z) {
+        var motion = new ListTag();
+        motion.add(DoubleTag.valueOf(x));
+        motion.add(DoubleTag.valueOf(y));
+        motion.add(DoubleTag.valueOf(z));
+        var compound = new CompoundTag();
+        compound.put("Motion", motion);
+        return compound;
+    }
+
+    private static CompoundTag bobEquipment() {
+        var equipment = new CompoundTag();
+        equipment.put("head", enchantedItem(Items.DIAMOND_HELMET, BOB_ARMOR_ENCHANTMENTS));
+        equipment.put("chest", enchantedItem(Items.DIAMOND_CHESTPLATE, BOB_ARMOR_ENCHANTMENTS));
+        equipment.put("legs", enchantedItem(Items.DIAMOND_LEGGINGS, BOB_ARMOR_ENCHANTMENTS));
+        equipment.put("feet", enchantedItem(Items.DIAMOND_BOOTS, BOB_ARMOR_ENCHANTMENTS));
+        equipment.put("mainhand", enchantedItem(Items.DIAMOND_SWORD, BOB_SWORD_ENCHANTMENTS));
+        equipment.put("offhand", enchantedItem(Items.SHIELD, BOB_SHIELD_ENCHANTMENTS));
+        var compound = new CompoundTag();
+        compound.put("equipment", equipment);
+        return compound;
+    }
+
+    private static CompoundTag enchantedItem(Item item, Map<ResourceKey<Enchantment>, Integer> enchantments) {
+        var enchantmentsElement = new CompoundTag();
+        enchantments.forEach((enchantment, level) -> enchantmentsElement.putInt(enchantment.identifier().toString(), level));
+        var components = new CompoundTag();
+        components.put("minecraft:enchantments", enchantmentsElement);
+        var compound = new CompoundTag();
+        compound.putString("id", BuiltInRegistries.ITEM.getKey(item).toString());
+        compound.put("components", components);
+        return compound;
     }
 
     private static SummonEntityLuckyEvent summonHappyGhast(Item harness) {
