@@ -18,6 +18,8 @@ import net.minecraft.resources.Identifier;
  */
 public class LuckyEventTypes {
     public static final LuckyEventType<SetBlockLuckyEvent> SET_BLOCK = register("set_block", SetBlockLuckyEvent.CODEC);
+    public static final LuckyEventType<FillLuckyEvent> FILL = register("fill", FillLuckyEvent.CODEC);
+    public static final LuckyEventType<OffsetLuckyEvent> OFFSET = register("offset", OffsetLuckyEvent.CODEC);
     public static final LuckyEventType<SummonEntityLuckyEvent> SUMMON_ENTITY = register("summon_entity", SummonEntityLuckyEvent.CODEC);
     public static final LuckyEventType<LootLuckyEvent> LOOT = register("loot", LootLuckyEvent.CODEC);
 

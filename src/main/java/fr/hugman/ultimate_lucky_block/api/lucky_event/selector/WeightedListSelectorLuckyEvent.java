@@ -70,14 +70,22 @@ public record WeightedListSelectorLuckyEvent(List<Entry> entries) implements Sel
         return LuckyEventTypes.WEIGHTED_LIST_SELECTOR;
     }
 
+    /**
+     * A single candidate of the list.
+     *
+     * @param weight  how likely the entry is to be picked at a luck of {@code 0}
+     * @param quality how much the weight moves for every point of luck. A positive quality makes the entry more likely
+     *                as luck rises, a negative one makes it less likely, and a quality of {@code 0} leaves it
+     *                untouched. An entry whose weight drops to {@code 0} or below can no longer be picked.
+     */
     record Entry(Holder<LuckyEvent> event, int weight, int quality) {
         private static final int DEFAULT_WEIGHT = 1;
         private static final int DEFAULT_QUALITY = 0;
 
         public static final Codec<Entry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 LuckyEvent.ENTRY_CODEC.fieldOf("event").forGetter(Entry::event),
-                ExtraCodecs.POSITIVE_INT.optionalFieldOf("weight", DEFAULT_WEIGHT).orElse(DEFAULT_QUALITY).forGetter(Entry::weight),
-                ExtraCodecs.NON_NEGATIVE_INT.optionalFieldOf("quality", DEFAULT_QUALITY).orElse(DEFAULT_QUALITY).forGetter(Entry::quality)
+                ExtraCodecs.POSITIVE_INT.optionalFieldOf("weight", DEFAULT_WEIGHT).orElse(DEFAULT_WEIGHT).forGetter(Entry::weight),
+                Codec.INT.optionalFieldOf("quality", DEFAULT_QUALITY).orElse(DEFAULT_QUALITY).forGetter(Entry::quality)
         ).apply(instance, Entry::new));
 
         public int getWeight(float luck) {

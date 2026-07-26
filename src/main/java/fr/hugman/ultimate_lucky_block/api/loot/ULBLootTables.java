@@ -12,6 +12,12 @@ import net.minecraft.world.level.storage.loot.LootTable;
 public class ULBLootTables {
     public static final ResourceKey<LootTable> LUCKY_SWORD = of("lucky_sword");
     public static final ResourceKey<LootTable> LUCKY_BOW = of("lucky_bow");
+    public static final ResourceKey<LootTable> LUCKY_ARMOR = of("lucky_armor");
+    public static final ResourceKey<LootTable> LUCKY_TOOL = of("lucky_tool");
+    public static final ResourceKey<LootTable> LUCKY_POTION = of("lucky_potion");
+    public static final ResourceKey<LootTable> VALUABLES = of("valuables");
+    public static final ResourceKey<LootTable> LOOT_CHEST = of("loot_chest");
+    public static final ResourceKey<LootTable> JUNK = of("junk");
     public static final ResourceKey<LootTable> ALL_DYES = of("all_dyes");
     public static final ResourceKey<LootTable> END_GAME_ITEM = of("end_game_item");
     public static final ResourceKey<LootTable> ELYTRA = of("elytra");

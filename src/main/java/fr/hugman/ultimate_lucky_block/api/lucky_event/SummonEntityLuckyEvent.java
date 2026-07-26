@@ -8,6 +8,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -59,12 +60,15 @@ public record SummonEntityLuckyEvent(
         }
         if (entity instanceof Mob mob) {
             mob.finalizeSpawn(world, world.getCurrentDifficultyAt(pos), EntitySpawnReason.MOB_SUMMONED, null);
-            if (this.shouldTarget  && player != null) {
+            if (this.shouldTarget && player != null) {
+                // A neutral mob needs to be actually angry, not just given a target: its attack goals check
+                // isAngry(), and its own tick drops any target it is not angry at.
+                if (mob instanceof NeutralMob angerable) {
+                    angerable.setPersistentAngerTarget(EntityReference.of(player));
+                    angerable.startPersistentAngerTimer();
+                }
                 mob.setTarget(player);
             }
-        }
-        if (entity instanceof NeutralMob angerable && this.shouldTarget && player != null) {
-            angerable.setTarget(player);
         }
         if (!world.tryAddFreshEntityWithPassengers(entity)) {
             UltimateLuckyBlock.LOGGER.error("Failed to spawn entity: {}", entity);

@@ -24,7 +24,8 @@ public class ULBEventTagProvider extends FabricTagsProvider<LuckyEvent> {
         builder(VERY_UNLUCKY).add(
                         SUMMON_WITHER,
                         SUMMON_WARDEN,
-                        SUMMON_CHARGED_CREEPER
+                        SUMMON_CHARGED_CREEPER,
+                        SUMMON_VEX_SWARM
                 )
                 .addOptional(SUMMON_BOB);
 
@@ -34,7 +35,12 @@ public class ULBEventTagProvider extends FabricTagsProvider<LuckyEvent> {
                 SUMMON_WITCH,
                 SUMMON_SLIME,
                 SUMMON_ANGRY_WOLF,
+                SUMMON_ANGRY_BEE,
                 SET_BEDROCK_WORLD_PILLAR,
+                SET_CAGE_TRAP,
+                SET_PIT_TRAP,
+                SET_TRAPPED_CHEST,
+                SET_SCULK_TRAP,
                 LOOT_ROTTEN_FLESH
         )
                 .addOptional(SUMMON_ONE_WIND_CHARGE)
@@ -44,6 +50,11 @@ public class ULBEventTagProvider extends FabricTagsProvider<LuckyEvent> {
                 SUMMON_RAINBOW_SHEEP,
                 SET_BEDROCK,
                 SET_WOOL_PILLAR,
+                SET_CONCRETE_POWDER_TOWER,
+                SET_CREAKING_HEART,
+                SUMMON_SULFUR_CUBE,
+                SUMMON_SHEEP_FLOOD,
+                SUMMON_FIREWORK_SHOW,
                 SUMMON_GIANT,
                 LOOT_ALL_DYES,
                 LOOT_BUCKETS,
@@ -59,12 +70,18 @@ public class ULBEventTagProvider extends FabricTagsProvider<LuckyEvent> {
                 SUMMON_TAMED_CAT,
                 LOOT_LUCKY_SWORD,
                 LOOT_LUCKY_BOW,
+                LOOT_LUCKY_ARMOR,
+                LOOT_LUCKY_TOOL,
+                LOOT_LUCKY_POTION,
+                LOOT_VALUABLES,
+                SET_LOOT_CHEST,
                 SET_RANDOM_LUCKY_BLOCK
         );
 
         builder(VERY_LUCKY).add(
                 LOOT_END_GAME_ITEM,
                 SET_ORE_BLOCK,
+                SET_ENCHANTING_SETUP,
                 LOOT_ELYTRA
         );
     }

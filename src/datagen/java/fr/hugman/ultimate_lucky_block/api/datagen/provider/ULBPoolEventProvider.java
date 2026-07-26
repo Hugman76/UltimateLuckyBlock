@@ -14,16 +14,21 @@ import net.minecraft.data.worldgen.BootstrapContext;
 import java.util.concurrent.CompletableFuture;
 
 /**
+ * Which tier a lucky block rolls, and how much the luck of the player moves that roll.
+ *
+ * <p>Every pool is a bell curve over the five tiers: the tier a block is named after is its most common outcome, and
+ * the extremes stay rare. The weights of a pool add up to 100, so each one reads directly as its percentage at a luck
+ * of {@code 0}.
+ *
+ * <p>Quality is how much a weight moves per point of luck. Bad tiers get a negative quality and good tiers a positive
+ * one, so luck shifts probability from the bad half of the curve to the good half instead of piling more good events
+ * on top. The curve keeps its shape at any luck, and a single Luck potion cannot turn a Lucky Block into a very lucky
+ * event dispenser.
+ *
  * @author Hugman
  * @since 1.0.0
  */
 public class ULBPoolEventProvider extends FabricDynamicRegistryProvider {
-    private static final int[] LUCK_DISTRIBUTION = {3, 15, 10, 15, 3};
-    private static final int[] LUCKY_LUCK_DISTRIBUTION = {1, 3, 10, 20, 5};
-    private static final int[] VERY_LUCKY_LUCK_DISTRIBUTION = {1, 5, 15, 20};
-    private static final int[] UNLUCKY_LUCK_DISTRIBUTION = {5, 20, 10, 3, 1};
-    private static final int[] VERY_UNLUCKY_LUCK_DISTRIBUTION = {20, 15, 5, 3};
-
     public ULBPoolEventProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
         super(output, registriesFuture);
     }
@@ -47,41 +52,43 @@ public class ULBPoolEventProvider extends FabricDynamicRegistryProvider {
         var events = registerable.lookup(ULBRegistryKeys.LUCKY_EVENT);
 
         registerable.register(LuckyPoolEvents.NORMAL, WeightedListSelectorLuckyEvent.builder(events)
-                .add(LUCK_DISTRIBUTION[0], 0, LuckyEventTags.VERY_UNLUCKY)
-                .add(LUCK_DISTRIBUTION[1], 2, LuckyEventTags.UNLUCKY)
-                .add(LUCK_DISTRIBUTION[2], 5, LuckyEventTags.NORMAL)
-                .add(LUCK_DISTRIBUTION[3], 7, LuckyEventTags.LUCKY)
-                .add(LUCK_DISTRIBUTION[4], 12, LuckyEventTags.VERY_LUCKY)
+                .add(4, -2, LuckyEventTags.VERY_UNLUCKY)
+                .add(20, -8, LuckyEventTags.UNLUCKY)
+                .add(52, 0, LuckyEventTags.NORMAL)
+                .add(20, 8, LuckyEventTags.LUCKY)
+                .add(4, 2, LuckyEventTags.VERY_LUCKY)
                 .build()
         );
         registerable.register(LuckyPoolEvents.LUCKY, WeightedListSelectorLuckyEvent.builder(events)
-                .add(LUCKY_LUCK_DISTRIBUTION[0], 0, LuckyEventTags.VERY_UNLUCKY)
-                .add(LUCKY_LUCK_DISTRIBUTION[1], 2, LuckyEventTags.UNLUCKY)
-                .add(LUCKY_LUCK_DISTRIBUTION[2], 5, LuckyEventTags.NORMAL)
-                .add(LUCKY_LUCK_DISTRIBUTION[3], 7, LuckyEventTags.LUCKY)
-                .add(LUCKY_LUCK_DISTRIBUTION[4], 12, LuckyEventTags.VERY_LUCKY)
+                .add(2, -2, LuckyEventTags.VERY_UNLUCKY)
+                .add(10, -6, LuckyEventTags.UNLUCKY)
+                .add(36, 0, LuckyEventTags.NORMAL)
+                .add(40, 4, LuckyEventTags.LUCKY)
+                .add(12, 4, LuckyEventTags.VERY_LUCKY)
                 .build()
         );
         registerable.register(LuckyPoolEvents.VERY_LUCKY, WeightedListSelectorLuckyEvent.builder(events)
-                .add(VERY_LUCKY_LUCK_DISTRIBUTION[0], 2, LuckyEventTags.UNLUCKY)
-                .add(VERY_LUCKY_LUCK_DISTRIBUTION[1], 5, LuckyEventTags.NORMAL)
-                .add(VERY_LUCKY_LUCK_DISTRIBUTION[2], 7, LuckyEventTags.LUCKY)
-                .add(VERY_LUCKY_LUCK_DISTRIBUTION[3], 12, LuckyEventTags.VERY_LUCKY)
+                // Never very unlucky
+                .add(4, -4, LuckyEventTags.UNLUCKY)
+                .add(20, 0, LuckyEventTags.NORMAL)
+                .add(48, 4, LuckyEventTags.LUCKY)
+                .add(28, 8, LuckyEventTags.VERY_LUCKY)
                 .build()
         );
         registerable.register(LuckyPoolEvents.UNLUCKY, WeightedListSelectorLuckyEvent.builder(events)
-                .add(UNLUCKY_LUCK_DISTRIBUTION[0], 0, LuckyEventTags.VERY_UNLUCKY)
-                .add(UNLUCKY_LUCK_DISTRIBUTION[1], 2, LuckyEventTags.UNLUCKY)
-                .add(UNLUCKY_LUCK_DISTRIBUTION[2], 5, LuckyEventTags.NORMAL)
-                .add(UNLUCKY_LUCK_DISTRIBUTION[3], 7, LuckyEventTags.LUCKY)
-                .add(UNLUCKY_LUCK_DISTRIBUTION[4], 12, LuckyEventTags.VERY_LUCKY)
+                .add(12, -4, LuckyEventTags.VERY_UNLUCKY)
+                .add(40, -6, LuckyEventTags.UNLUCKY)
+                .add(36, 0, LuckyEventTags.NORMAL)
+                .add(10, 6, LuckyEventTags.LUCKY)
+                .add(2, 4, LuckyEventTags.VERY_LUCKY)
                 .build()
         );
         registerable.register(LuckyPoolEvents.VERY_UNLUCKY, WeightedListSelectorLuckyEvent.builder(events)
-                .add(VERY_UNLUCKY_LUCK_DISTRIBUTION[0], 0, LuckyEventTags.VERY_UNLUCKY)
-                .add(VERY_UNLUCKY_LUCK_DISTRIBUTION[1], 2, LuckyEventTags.UNLUCKY)
-                .add(VERY_UNLUCKY_LUCK_DISTRIBUTION[2], 5, LuckyEventTags.NORMAL)
-                .add(VERY_UNLUCKY_LUCK_DISTRIBUTION[3], 7, LuckyEventTags.LUCKY)
+                // Never very lucky
+                .add(28, -8, LuckyEventTags.VERY_UNLUCKY)
+                .add(48, -4, LuckyEventTags.UNLUCKY)
+                .add(20, 0, LuckyEventTags.NORMAL)
+                .add(4, 4, LuckyEventTags.LUCKY)
                 .build()
         );
         registerable.register(LuckyPoolEvents.DOUBLE, RepeatSelectorLuckyEvent.builder().count(2).add(events.getOrThrow(LuckyPoolEvents.NORMAL)).build());
